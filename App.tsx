@@ -5,10 +5,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import HabitCreationScreen from './screens/HabitCreationScreen';
 import TrackProgressScreen from './screens/TrackProgressScreen'; 
-import ViewProgressScreen from './screens/ViewProgressScreen'; 
+import ViewProgressScreen from './screens/ViewProgressScreen';
+import ProfileScreen from './screens/ProfileScreen';
 import CustomHeader from './components/CustomHeader';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ProfileScreen from './screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -47,7 +47,7 @@ const App: React.FC = () => {
             tabBarIcon: ({ color, size }) => (
               <Icon name="home-outline" color={color} size={size} />
             ),
-            headerShown: false, // To hide the tab navigator's header
+            headerShown: false, 
           }}
         />
         <Tab.Screen
