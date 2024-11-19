@@ -11,7 +11,7 @@ const CustomHeader: React.FC = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     const onProfilePress = () => {
-       navigation.navigate('Profile'); // Now TypeScript should recognize 'Profile'
+       navigation.navigate('Profile');
     }
 
     const onMenuPress = () => {
@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    fontFamily: 'BodoniSvtyTwoOSITCTT-Bold',
   },
 });
 

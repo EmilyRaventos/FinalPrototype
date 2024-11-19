@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // For navigation
 import generalStyles from '../styles/generalStyles';
 
 const ProfileScreen: React.FC = () => {
@@ -7,6 +8,7 @@ const ProfileScreen: React.FC = () => {
   const [email, setEmail] = useState('john.doe@example.com');
   const [password, setPassword] = useState('********');
   const [isEditing, setIsEditing] = useState(false);
+  const navigation = useNavigation(); // Hook for navigation
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
@@ -15,6 +17,25 @@ const ProfileScreen: React.FC = () => {
   const handleSave = () => {
     setIsEditing(false);
     // Save changes logic goes here
+  };
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        onPress: () => {
+          // Navigate to the login screen
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'AuthScreen' }],
+          });
+        },
+      },
+    ]);
   };
 
   return (
@@ -43,9 +64,15 @@ const ProfileScreen: React.FC = () => {
         editable={isEditing}
         secureTextEntry
       />
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={isEditing ? handleSave : handleEdit}>
-            <Text style={styles.buttonText}>{isEditing ? 'Save' : 'Edit'}</Text>
+          <Text style={styles.buttonText}>{isEditing ? 'Save' : 'Edit'}</Text>
+        </TouchableOpacity>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -77,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e9e9',
   },
   buttonContainer: {
-   alignItems: 'center',
+    alignItems: 'center',
   },
   button: {
     marginTop: 20,
@@ -85,6 +112,15 @@ const styles = StyleSheet.create({
     backgroundColor: generalStyles.button.backgroundColor,
     borderRadius: 4,
     width: 200,
+  },
+  logoutButton: {
+    marginTop: -1,
+    backgroundColor: 'white', // Logout button style
+  },
+  logoutButtonText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
   },
   buttonText: {
     color: '#fff',
