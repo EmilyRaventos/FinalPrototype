@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler'; // Import Swipeable
 import generalStyles from '../styles/generalStyles'; // Import styles

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import { initializeDatabase } from './database'; // Import the database setup function
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import HabitCreationScreen from './screens/HabitCreationScreen';
-import TrackProgressScreen from './screens/TrackProgressScreen'; 
+import TrackProgressScreen from './screens/TrackProgressScreen';
 import ViewProgressScreen from './screens/ViewProgressScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AuthScreen from './screens/AuthScreen';
@@ -37,7 +39,7 @@ const HabitStack = () => {
 const App: React.FC = () => {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style = {{ flex : 1 }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={{
@@ -52,7 +54,7 @@ const App: React.FC = () => {
                 tabBarIcon: ({ color, size }) => (
                   <Icon name="home-outline" color={color} size={size} />
                 ),
-                headerShown: false, 
+                headerShown: false, // Prevent the header from showing here as it's handled by the stack
               }}
             />
             <Tab.Screen
@@ -84,7 +86,7 @@ const App: React.FC = () => {
             />
           </Tab.Navigator>
         </NavigationContainer>
-     </SafeAreaView>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 };
