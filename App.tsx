@@ -17,8 +17,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabaseSync('mySQLiteDB.db');
-db.execSync('SELECT * FROM category;');
+// const db = SQLite.openDatabaseSync('mySQLiteDB.db');
+// db.execSync('SELECT * FROM category;');
 // db.transaction(tx => {
 //   tx.executeSql(
 //     'SELECT * FROM Category;'

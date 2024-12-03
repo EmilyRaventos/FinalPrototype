@@ -5,16 +5,6 @@ import generalStyles from '../styles/generalStyles'; // Import styles
 
 import * as SQLite from 'expo-sqlite';
 
-interface Habit {
-  habit_id: number;
-  user_id: number;
-  title: string;
-  description: string; 
-  start_date: string;
-  category: string;
-  status: string;
-}
-
 interface HomeScreenProps {
   navigation: any;
 }
@@ -22,8 +12,38 @@ interface HomeScreenProps {
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   
   // get list of habits from db
-  const db = SQLite.openDatabaseSync('mySQLiteDB.db');
-  let habits: Habit[] = db.getAllSync('SELECT * FROM Habit;');
+  // const db = SQLite.openDatabaseSync('mySQLiteDB.db');
+  // let habits: Habit[] = db.getAllSync('SELECT * FROM Habit;');
+  interface Habit {
+    habit_id: number;
+    user_id: number;
+    title: string;
+    description: string; 
+    start_date: string;
+    category: string;
+    status: string;
+  }
+
+  const [habits, setHabits] = useState<Habit[]>([
+    {
+      habit_id: 1, 
+      user_id: 1, 
+      title: 'test-title-',
+       description: 'test-description-',
+        start_date: '12-03-2024', 
+        category: 'test-category',
+        status: 'test-status-'
+      },
+    {
+      habit_id: 1, 
+      user_id: 1, 
+      title: 'test-title-', 
+      description: 'test-description-', 
+      start_date: '12-03-2024', 
+      status: 'test-status-', 
+      category: 'test-category'
+    }
+  ]);
 
   const handleAddHabit = () => {
     navigation.navigate('CreateHabit');
@@ -34,7 +54,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   const removeHabit = (id: number) => {
-    // setHabits(prevHabits => prevHabits.filter(habit => habit.habit_id !== id));
+    setHabits(prevHabits => prevHabits.filter(habit => habit.habit_id !== id));
     // TODO: save/update new list of habits.
   };
 
@@ -73,12 +93,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <View>
         <Text style={generalStyles.header}>Habits</Text>
         {/* List of Habits */}
-        <FlatList
+        {/* <FlatList
           data={habits}
           renderItem={renderHabitItem}
           keyExtractor={item => item.habit_id.toString()}
           style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
-        />
+        /> */}
         {/* Centered Button for Adding Habit */}
         <View style={generalStyles.centeredButtonContainer}>
           <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
