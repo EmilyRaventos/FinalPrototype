@@ -94,9 +94,7 @@ const generalStyles = StyleSheet.create({
 
   // Home page - habit list
   habitContainer: {
-    marginBottom: 10, // Add spacing between habit items
     backgroundColor: '#f9f9f9', 
-    borderRadius: 5,
     padding: 10,
   },
 
