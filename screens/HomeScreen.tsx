@@ -31,7 +31,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const fetchHabits = () => {
     let userId = 1; // come back and change it based on login.
     try {
-      const results = db.getAllSync('SELECT * FROM Habit WHERE user_id= ?', [userId]) as Habit[];
+      const results : Habit[] = db.getAllSync(
+        'SELECT * FROM Habit WHERE user_id= ? AND status != "done"', 
+        [userId]);
       setHabits(results);
     } catch (error) {
       console.error('Error fetching habits:', error);
@@ -47,6 +49,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  const markHabitAsCompleted = (id: number) => {
+    try {
+      db.runSync('UPDATE Habit SET status = "done" WHERE habit_id = ?', [id]);
+      setHabits(habits.filter(habit => habit.habit_id !== id)); // Optimistically update the state
+    } catch (error) {
+      console.error('Error marking habit as completed:', error);
+    }
+  };
+
   const handleAddHabit = () => {
     navigation.navigate('CreateHabit');
   };
@@ -55,14 +66,47 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     fetchHabits();
   }, []);
 
+  // const renderRightActions = (id: number) => (
+  //   <TouchableOpacity
+  //     style={generalStyles.removeButton}
+  //     onPress={() => removeHabit(id)}
+  //   >
+  //     <Text style={generalStyles.removeButtonText}>Remove</Text>
+  //   </TouchableOpacity>
+  // );
+
   const renderRightActions = (id: number) => (
-    <TouchableOpacity
-      style={generalStyles.removeButton}
-      onPress={() => removeHabit(id)}
-    >
-      <Text style={generalStyles.removeButtonText}>Remove</Text>
-    </TouchableOpacity>
+    <View style={{ flexDirection: 'row' }}>
+      {/* Completed Button */}
+      <TouchableOpacity
+        style={generalStyles.completedButton}
+        onPress={() => markHabitAsCompleted(id)}
+      >
+        <Text style={generalStyles.completedButtonText}>Completed</Text>
+      </TouchableOpacity>
+      {/* Remove Button */}
+      <TouchableOpacity
+        style={generalStyles.removeButton}
+        onPress={() => removeHabit(id)}
+      >
+        <Text style={generalStyles.removeButtonText}>Remove</Text>
+      </TouchableOpacity>
+    </View>
   );
+
+  // const renderHabitItem = ({ item }: { item: Habit }) => (
+  //   <ReanimatedSwipeable renderRightActions={() => renderRightActions(item.habit_id)}>
+  //     <View style={generalStyles.habitContainer}>
+  //       <TouchableOpacity style={generalStyles.habitHeader} onPress={() => toggleExpand(item.habit_id)}>
+  //         <Text style={generalStyles.habitTitle}>{item.title}</Text>
+  //         <Text style={generalStyles.arrow}>{expandedItem === item.habit_id ? '▼' : '►'}</Text>
+  //       </TouchableOpacity>
+  //       {expandedItem === item.habit_id && (
+  //         <Text style={generalStyles.habitDetails}>{item.description}</Text>
+  //       )}
+  //     </View>
+  //   </ReanimatedSwipeable>
+  // );
 
   const renderHabitItem = ({ item }: { item: Habit }) => (
     <ReanimatedSwipeable renderRightActions={() => renderRightActions(item.habit_id)}>
@@ -78,26 +122,48 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     </ReanimatedSwipeable>
   );
 
-  return (
-    <View style={{ flex: 1 }}>
-      <View>
-        <Text style={generalStyles.header}>Habits</Text>
-        {/* List of Habits */}
-        <FlatList
-          data={habits}
-          renderItem={renderHabitItem}
-          keyExtractor={item => item.habit_id.toString()}
-          style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
-        />
-        {/* Centered Button for Adding Habit */}
-        <View style={generalStyles.centeredButtonContainer}>
-          <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
-            <Text style={generalStyles.buttonText}>Add Habit</Text>
-          </TouchableOpacity>
-        </View>
+//   return (
+//     <View style={{ flex: 1 }}>
+//       <View>
+//         <Text style={generalStyles.header}>Habits</Text>
+//         {/* List of Habits */}
+//         <FlatList
+//           data={habits}
+//           renderItem={renderHabitItem}
+//           keyExtractor={item => item.habit_id.toString()}
+//           style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
+//         />
+//         {/* Centered Button for Adding Habit */}
+//         <View style={generalStyles.centeredButtonContainer}>
+//           <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
+//             <Text style={generalStyles.buttonText}>Add Habit</Text>
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+//     </View>
+//   );
+// };
+
+return (
+  <View style={{ flex: 1 }}>
+    <View>
+      <Text style={generalStyles.header}>Habits</Text>
+      {/* List of Habits */}
+      <FlatList
+        data={habits}
+        renderItem={renderHabitItem}
+        keyExtractor={item => item.habit_id.toString()}
+        style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
+      />
+      {/* Centered Button for Adding Habit */}
+      <View style={generalStyles.centeredButtonContainer}>
+        <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
+          <Text style={generalStyles.buttonText}>Add Habit</Text>
+        </TouchableOpacity>
       </View>
     </View>
-  );
+  </View>
+);
 };
 
 export default HomeScreen;

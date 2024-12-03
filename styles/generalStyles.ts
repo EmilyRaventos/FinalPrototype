@@ -5,6 +5,7 @@ const colors = {
   remove: '#ff6347', 
   white: '#ffffff',
   gray: '#808080', 
+  complete: 'green',
 };
 
 const generalStyles = StyleSheet.create({
@@ -70,6 +71,19 @@ const generalStyles = StyleSheet.create({
   },
 
   removeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  
+  completedButton: {
+    backgroundColor: colors.complete,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: '100%',
+  },
+
+  completedButtonText: {
     color: 'white',
     fontSize: 16,
   },
