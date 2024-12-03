@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler'; // Import Swipeable
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import generalStyles from '../styles/generalStyles'; // Import styles
 
 import * as SQLite from 'expo-sqlite';
 
-// db.transaction(tx => {
-//   tx.executeSql(
-//     'SELECT * FROM Category;'
-//   );
-// });
-
 interface Habit {
-  id: string;
-  name: string;
-  details: string; // Add a details property
+  habit_id: number;
+  user_id: number;
+  title: string;
+  description: string; 
+  start_date: string;
+  category: string;
+  status: string;
 }
 
 interface HomeScreenProps {
@@ -23,19 +21,9 @@ interface HomeScreenProps {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   
+  // get list of habits from db
   const db = SQLite.openDatabaseSync('mySQLiteDB.db');
-  // const results = db.execSync('SELECT * FROM category;');
-  interface Category {
-    category_id: number;
-    name: string;
-  }
-  
-  const results: Category[] = db.getAllSync('SELECT * FROM category;');
-  
-  const [habits, setHabits] = useState<Habit[]>([
-    { id: '1', name: 'Drink water', details: 'Aim for 8 glasses a day.' },
-    { id: '2', name: 'Exercise', details: '30 minutes of activity daily.' },
-  ]);
+  let habits: Habit[] = db.getAllSync('SELECT * FROM Habit;');
 
   const handleAddHabit = () => {
     navigation.navigate('CreateHabit');
@@ -45,18 +33,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('TrackProgress');
   };
 
-  const removeHabit = (id: string) => {
-    setHabits(prevHabits => prevHabits.filter(habit => habit.id !== id));
+  const removeHabit = (id: number) => {
+    // setHabits(prevHabits => prevHabits.filter(habit => habit.habit_id !== id));
+    // TODO: save/update new list of habits.
   };
 
   // State to track which items are expanded
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [expandedItem, setExpandedItem] = useState<number | null>(null);
 
-  const toggleExpand = (id: string) => {
+  const toggleExpand = (id: number) => {
     setExpandedItem(expandedItem === id ? null : id); 
   };
 
-  const renderRightActions = (id: string) => (
+  const renderRightActions = (id: number) => (
     <TouchableOpacity
       style={generalStyles.removeButton}
       onPress={() => removeHabit(id)}
@@ -66,36 +55,34 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 
   const renderHabitItem = ({ item }: { item: Habit }) => (
-    <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+    <ReanimatedSwipeable renderRightActions={() => renderRightActions(item.habit_id)}>
       <View style={generalStyles.habitContainer}>
-        <TouchableOpacity style={generalStyles.habitHeader} onPress={() => toggleExpand(item.id)}>
-          <Text style={generalStyles.habitTitle}>{item.name}</Text>
-          <Text style={generalStyles.arrow}>{expandedItem === item.id ? '▼' : '►'}</Text>
+        <TouchableOpacity style={generalStyles.habitHeader} onPress={() => toggleExpand(item.habit_id)}>
+          <Text style={generalStyles.habitTitle}>{item.title}</Text>
+          <Text style={generalStyles.arrow}>{expandedItem === item.habit_id ? '▼' : '►'}</Text>
         </TouchableOpacity>
-        {expandedItem === item.id && (
-          <Text style={generalStyles.habitDetails}>{item.details}</Text>
+        {expandedItem === item.habit_id && (
+          <Text style={generalStyles.habitDetails}>{item.description}</Text>
         )}
       </View>
-    </Swipeable>
+    </ReanimatedSwipeable>
   );
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Upper Half for Habits */}
       <View>
         <Text style={generalStyles.header}>Habits</Text>
         {/* List of Habits */}
         <FlatList
           data={habits}
           renderItem={renderHabitItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.habit_id.toString()}
           style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
         />
         {/* Centered Button for Adding Habit */}
         <View style={generalStyles.centeredButtonContainer}>
           <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
             <Text style={generalStyles.buttonText}>Add Habit</Text>
-            <Text>{results[0].name}</Text>
           </TouchableOpacity>
         </View>
       </View>
