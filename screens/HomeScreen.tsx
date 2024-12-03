@@ -3,6 +3,14 @@ import { View, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler'; // Import Swipeable
 import generalStyles from '../styles/generalStyles'; // Import styles
 
+import * as SQLite from 'expo-sqlite';
+
+// db.transaction(tx => {
+//   tx.executeSql(
+//     'SELECT * FROM Category;'
+//   );
+// });
+
 interface Habit {
   id: string;
   name: string;
@@ -14,6 +22,16 @@ interface HomeScreenProps {
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  
+  const db = SQLite.openDatabaseSync('mySQLiteDB.db');
+  // const results = db.execSync('SELECT * FROM category;');
+  interface Category {
+    category_id: number;
+    name: string;
+  }
+  
+  const results: Category[] = db.getAllSync('SELECT * FROM category;');
+  
   const [habits, setHabits] = useState<Habit[]>([
     { id: '1', name: 'Drink water', details: 'Aim for 8 glasses a day.' },
     { id: '2', name: 'Exercise', details: '30 minutes of activity daily.' },
@@ -77,6 +95,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <View style={generalStyles.centeredButtonContainer}>
           <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
             <Text style={generalStyles.buttonText}>Add Habit</Text>
+            <Text>{results[0].name}</Text>
           </TouchableOpacity>
         </View>
       </View>

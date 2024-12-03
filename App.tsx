@@ -14,6 +14,17 @@ import CustomHeader from './components/CustomHeader';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabaseSync('mySQLiteDB.db');
+db.execSync('SELECT * FROM category;');
+// db.transaction(tx => {
+//   tx.executeSql(
+//     'SELECT * FROM Category;'
+//   );
+// });
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
