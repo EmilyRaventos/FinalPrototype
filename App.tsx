@@ -1,6 +1,3 @@
-import React, { useEffect } from 'react';
-// import { View, Text } from 'react-native';
-// import { initializeDatabase } from './database'; // Import the database setup function
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,29 +10,18 @@ import AuthScreen from './screens/AuthScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-
-import * as SQLite from 'expo-sqlite';
-
-// const db = SQLite.openDatabaseSync('mySQLiteDB.db');
-// db.execSync('SELECT * FROM category;');
-// db.transaction(tx => {
-//   tx.executeSql(
-//     'SELECT * FROM Category;'
-//   );
-// });
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const HabitStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="HomePage"      component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreateHabit"   component={HabitCreationScreen} />
+      <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="HomePage" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="CreateHabit" component={HabitCreationScreen} />
       <Stack.Screen name="TrackProgress" component={TrackProgressScreen} />
-      <Stack.Screen name="ViewProgress"  component={ViewProgressScreen}  />
-      <Stack.Screen name="Profile"       component={ProfileScreen}        />
-      <Stack.Screen name="AuthScreen"    component={AuthScreen}          options={{ headerShown: false }} />
+      <Stack.Screen name="ViewProgress" component={ViewProgressScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };

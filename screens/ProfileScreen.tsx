@@ -1,38 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // For navigation
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
+import { getUserByIdSync, updateUserSync, User } from '../dbHelper';
 
 const ProfileScreen: React.FC = () => {
-  const [name, setName] = useState('John Doe');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [password, setPassword] = useState('********');
+  const navigation = useNavigation();
+  // const route = useRoute();
+  // const { user_id }: { userId: number } = route.params;
+
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const navigation = useNavigation(); // Hook for navigation
+  const [originalData, setOriginalData] = useState<User | null>(null);
+
+  const userId = 0;
+
+  useEffect(() => {
+    // const user = getUserByIdSync(userId);
+    let user = {
+      user_id: 0,
+      user_name: 'name',
+      email: 'email',
+      password: 'pass'
+    }
+
+    if (user) {
+      setUserName(user.user_name);
+      setEmail(user.email);
+      setPassword(user.password);
+      setOriginalData(user);
+    } else {
+      Alert.alert('Error', 'User not found');
+      navigation.goBack(); // Navigate back if user not found
+    }
+  }, [userId]);
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   const handleSave = () => {
-    setIsEditing(false);
-    // Save changes logic goes here
+    const success = updateUserSync(userId, userName, email, password);
+
+    if (success) {
+      setIsEditing(false);
+      setOriginalData({ user_id: userId, user_name: userName, email, password });
+      Alert.alert('Success', 'Profile updated successfully');
+    } else {
+      Alert.alert('Error', 'Failed to save changes');
+    }
+  };
+
+  const handleCancel = () => {
+    if (originalData) {
+      setUserName(originalData.user_name);
+      setEmail(originalData.email);
+      setPassword(originalData.password);
+      setIsEditing(false);
+    }
   };
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Logout',
         onPress: () => {
-          // Navigate to the login screen
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'AuthScreen' }],
-          });
+          navigation.reset({ index: 0, routes: [{ name: 'AuthScreen' }] });
         },
       },
     ]);
@@ -43,8 +79,8 @@ const ProfileScreen: React.FC = () => {
       <Text style={styles.label}>Name</Text>
       <TextInput
         style={[styles.input, isEditing ? styles.editable : styles.readOnly]}
-        value={name}
-        onChangeText={setName}
+        value={userName}
+        onChangeText={setUserName}
         editable={isEditing}
       />
 
@@ -70,7 +106,12 @@ const ProfileScreen: React.FC = () => {
           <Text style={styles.buttonText}>{isEditing ? 'Save' : 'Edit'}</Text>
         </TouchableOpacity>
 
-        {/* Logout Button */}
+        {isEditing && (
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>

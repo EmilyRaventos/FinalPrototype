@@ -13,17 +13,17 @@ const AuthScreen: React.FC = () => {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
-
+  
     // Query to check if user exists
     try {
-      const result = db.getFirstSync(
-        `SELECT id FROM users WHERE email = ? AND password = ?`, 
+      const userId = db.getFirstSync(
+        `SELECT user_id FROM user WHERE email = ? AND password = ?`,
         [email, password]
       );
   
       // Check if a user was found
-      if (result) {
-        navigation.replace('HomePage', { result }); // Pass userId to HomePage
+      if (userId) {
+        navigation.replace('HomePage', { number: userId }); // Pass userId to HomePage
       } else {
         Alert.alert('Error', 'Invalid email or password');
       }
@@ -32,23 +32,20 @@ const AuthScreen: React.FC = () => {
       Alert.alert('Error', 'An error occurred while logging in');
     }
   };
-
   const handleCreateAccount = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
-
-    // Insert the new user into the database
-    try { 
+  
+    try {
       // Check if the email already exists in the database
       const existingUser = db.getFirstSync(
         `SELECT user_id FROM user WHERE email = ?`,
         [email]
       );
-
+  
       if (existingUser) {
-       // If the email exists, prompt the user to log in
         Alert.alert(
           'Account Exists',
           'This email is already registered. Please log in instead.',
@@ -56,37 +53,31 @@ const AuthScreen: React.FC = () => {
         );
         return;
       }
-
+  
       const sqlStatement = `INSERT INTO user (user_name, email, password) VALUES ('username-test', '${email}', '${password}')`;
-      db.execSync([sqlStatement].toString()); 
-
+      db.execSync(sqlStatement);
+  
       // Fetch the userId for the newly created account
       const result = db.getFirstSync(
         `SELECT user_id FROM user WHERE email = ? AND password = ?`,
         [email, password]
       );
-
-      // Fetch the userId for the newly created account
-    const newUser = db.getFirstSync(
-      `SELECT user_id FROM user WHERE email = ? AND password = ?`,
-      [email, password]
-    );
-
-    if (newUser) {
-      Alert.alert('Account Created', 'Account created successfully. Welcome!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.replace('HomePage', { newUser }),
-        },
-      ]);
-    } else {
-      Alert.alert('Error', 'Failed to create account');
+  
+      if (result) {
+        Alert.alert('Account Created', 'Account created successfully. Welcome!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.replace('HomePage', { userId: result }), // Pass userId to HomePage
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Failed to create account');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'An error occurred while creating the account');
     }
-  } catch (error) {
-    console.error(error);
-    Alert.alert('Error', 'An error occurred while creating the account');
-  }
-};
+  };
 
   return (
     <View style={styles.container}>
