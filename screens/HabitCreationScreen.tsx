@@ -12,10 +12,10 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [checkInFrequency, setCheckInFrequency] = useState('');
+  const [category, setCategory] = useState('');
 
   const handleSaveHabit = () => {
-    if (!title || !description || !startDate || !checkInFrequency) {
+    if (!title || !description || !startDate || !category) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
@@ -52,12 +52,12 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         onChangeText={setStartDate}
       />
 
-      <Text style={styles.label}>Check-in Frequency</Text>
+      <Text style={styles.label}>Category</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter Check-in Frequency"
-        value={checkInFrequency}
-        onChangeText={setCheckInFrequency}
+        placeholder="Enter Category"
+        value={category}
+        onChangeText={setCategory}
       />
 
       {/* Save Button */}

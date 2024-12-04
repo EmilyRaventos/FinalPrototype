@@ -34,7 +34,7 @@ const HabitStack = () => {
       <Stack.Screen name="CreateHabit"   component={HabitCreationScreen} />
       <Stack.Screen name="TrackProgress" component={TrackProgressScreen} />
       <Stack.Screen name="ViewProgress"  component={ViewProgressScreen}  />
-      <Stack.Screen name="Profile"       component={ProfileScreen}       options={{ headerShown: false }} />
+      <Stack.Screen name="Profile"       component={ProfileScreen}        />
       <Stack.Screen name="AuthScreen"    component={AuthScreen}          options={{ headerShown: false }} />
     </Stack.Navigator>
   );

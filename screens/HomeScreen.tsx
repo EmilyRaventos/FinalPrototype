@@ -35,18 +35,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setExpandedItem(expandedItem === id ? null : id); 
   };
 
-  // const fetchHabits = () => {
-  //   let userId = 1; // come back and change it based on login.
-  //   try {
-  //     const results : Habit[] = db.getAllSync(
-  //       'SELECT * FROM Habit WHERE user_id= ? AND status != "done"', 
-  //       [userId]);
-  //     setHabits(results);
-  //   } catch (error) {
-  //     console.error('Error fetching habits:', error);
-  //   }
-  // };
-
   const fetchHabits = (category = '', date = '') => {
     let userId = 1; // Replace with dynamic user ID
     try {
@@ -126,33 +114,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     </ReanimatedSwipeable>
   );
 
-// return (
-//   <View style={{ flex: 1 }}>
-//     <View>
-//       <Text style={generalStyles.header}>Habits</Text>
-//       {/* List of Habits */}
-//       <FlatList
-//         data={habits}
-//         renderItem={renderHabitItem}
-//         keyExtractor={item => item.habit_id.toString()}
-//         style={{ flexGrow: 0 }} // Prevents FlatList from expanding to fill the container
-//       />
-//       {/* Centered Button for Adding Habit */}
-//       <View style={generalStyles.centeredButtonContainer}>
-//         <TouchableOpacity style={generalStyles.button} onPress={handleAddHabit}>
-//           <Text style={generalStyles.buttonText}>Add Habit</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   </View>
-// );
-// };
-
 return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
     <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <View style={{paddingLeft: 10}}>
-       <Icon name="menu" size={30} color="#000" />
+       <Icon name="icon" size={30} color="#000" />
       </View>
       <Text style={generalStyles.header}>Home</Text>
       <TouchableOpacity style={{paddingRight: 10}} onPress={onProfilePress}>
