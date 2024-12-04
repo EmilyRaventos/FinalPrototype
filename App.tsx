@@ -10,7 +10,6 @@ import TrackProgressScreen from './screens/TrackProgressScreen';
 import ViewProgressScreen from './screens/ViewProgressScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AuthScreen from './screens/AuthScreen';
-import CustomHeader from './components/CustomHeader';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -31,18 +30,12 @@ const Tab = createBottomTabNavigator();
 const HabitStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="HomePage"
-        component={HomeScreen}
-        options={{
-          header: () => <CustomHeader />,
-        }}
-      />
-      <Stack.Screen name="CreateHabit" component={HabitCreationScreen} options={{ title: 'Create Habit' }} />
-      <Stack.Screen name="TrackProgress" component={TrackProgressScreen} options={{ title: 'Track Progress' }} />
-      <Stack.Screen name="ViewProgress" component={ViewProgressScreen} options={{ title: 'View Progress' }} />
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
-      <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ title: 'AuthScreen' }} />
+      <Stack.Screen name="HomePage"      component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="CreateHabit"   component={HabitCreationScreen} />
+      <Stack.Screen name="TrackProgress" component={TrackProgressScreen} />
+      <Stack.Screen name="ViewProgress"  component={ViewProgressScreen}  />
+      <Stack.Screen name="Profile"       component={ProfileScreen}       options={{ headerShown: false }} />
+      <Stack.Screen name="AuthScreen"    component={AuthScreen}          options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 };
@@ -56,6 +49,7 @@ const App: React.FC = () => {
             screenOptions={{
               tabBarActiveTintColor: 'tomato',
               tabBarInactiveTintColor: 'gray',
+              headerShown: false
             }}
           >
             <Tab.Screen

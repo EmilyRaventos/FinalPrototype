@@ -5,7 +5,7 @@ const colors = {
   remove: '#ff6347', 
   white: '#ffffff',
   gray: '#808080', 
-  complete: 'green',
+  green: 'green',
 };
 
 const generalStyles = StyleSheet.create({
@@ -76,7 +76,7 @@ const generalStyles = StyleSheet.create({
   },
   
   completedButton: {
-    backgroundColor: colors.complete,
+    backgroundColor: colors.green,
     justifyContent: 'center',
     alignItems: 'center',
     width: 100,
@@ -108,7 +108,7 @@ const generalStyles = StyleSheet.create({
 
   // Home page - habit list
   habitContainer: {
-    backgroundColor: '#f9f9f9', 
+    backgroundColor: 'white', 
     padding: 10,
   },
 
@@ -132,6 +132,20 @@ const generalStyles = StyleSheet.create({
     fontSize: 16,
     color: '#666', // Color for the details text
   },
+
+  // home page
+  home_header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#f8f8f8', // Adjust as needed
+    elevation: 2, // Add shadow effect on Android
+  },
+  home_title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
 });
 
-export default generalStyles;
+export { generalStyles, colors };

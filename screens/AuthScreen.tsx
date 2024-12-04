@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // For navigation
-import generalStyles from '../styles/generalStyles';
+import { generalStyles } from '../styles/generalStyles';
 
 const AuthScreen: React.FC = () => {
   const [email, setEmail] = useState('');
