@@ -23,7 +23,7 @@ const AuthScreen: React.FC = () => {
   
       // Check if a user was found
       if (userId) {
-        navigation.replace('HomePage', { number: userId }); // Pass userId to HomePage
+        navigation.replace('HomePage', { userId: userId }); // Pass userId to HomePage
       } else {
         Alert.alert('Error', 'Invalid email or password');
       }
