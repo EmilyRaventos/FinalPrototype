@@ -2,16 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 // import { useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
-import { getUserByIdSync, updateUserSync, User } from '../dbHelper';
-import { db } from '../db';
+import { User, getUserData, updateUser } from '../dbHelper';
 
 const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
-  // const route = useRoute();
-  // const { user_id }: { userId: number } = route.params;
-
-  // get user_id from params
-  // use user_id to update profile info at user request
-
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,8 +14,7 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const userId = 1;
 
   useEffect(() => {
-    const userData = db.getFirstSync<User>('SELECT * FROM User WHERE user_id=?',
-      [userId]);
+    const userData = getUserData(userId);
 
     if (userData) {
       setUserName(userData.user_name);
@@ -40,7 +32,7 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   };
 
   const handleSave = () => {
-    const success = updateUserSync(userId, userName, email, password);
+    const success = updateUser(userId, userName, email, password);
 
     if (success) {
       setIsEditing(false);
