@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, Button, SafeAreaView } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { generalStyles, colors } from '../styles/generalStyles'; // Import styles
-import { db } from '../db';
 import { useFocusEffect } from '@react-navigation/native';
-import { Habit, getAllHabits, removeHabitRecords, markComplete } from '../dbHelper';
+import { 
+  Habit, 
+  getAllHabits, 
+  removeHabitRecords,
+  markComplete 
+} from '../dbHelper';
 // import { useRoute } from '@react-navigation/native';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {

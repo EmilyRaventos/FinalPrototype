@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { getUserIdAtLogin, accountExistsForEmail, createAccount } from '../dbHelper';
+import { 
+  getUserIdAtLogin, 
+  accountExistsForEmail, 
+  createAccount 
+} from '../dbHelper';
 
 const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');

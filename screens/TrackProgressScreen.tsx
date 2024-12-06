@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   View,
   Text,
@@ -10,25 +11,13 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { db } from '../db';
-  
-interface Habit {
-  habit_id: number;
-  user_id: number;
-  title: string;
-  description: string; 
-  start_date: string;
-  category: string;
-  status: string;
-}
-
-interface HabitLog {
-  log_id: number;
-  habit_id: number;
-  date: string;
-  status: string;
-}
+import { 
+  getAllActiveHabits, 
+  getHabitIdByTitle, 
+  habitLogExistsByDate, 
+  updateHabitLogRecord, 
+  addNewHabitLogRecord 
+} from '../dbHelper';
 
 const TrackProgressScreen: React.FC = () => {
   const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
@@ -40,10 +29,7 @@ const TrackProgressScreen: React.FC = () => {
   const userId = 1;
 
   // Get all active habits for the user
-  const habitResults: { title: string }[] = db.getAllSync(
-    `SELECT title FROM Habit WHERE user_id= ? AND status != "done"`,
-    [userId]
-  );
+  const habitResults: { title: string }[] = getAllActiveHabits(userId); // db helper method
   const habits = habitResults.map((habit) => habit.title);
 
   // Initialize selectedDate to today's date when the component mounts
@@ -58,10 +44,7 @@ const TrackProgressScreen: React.FC = () => {
     }
   
     // Get corresponding habit_id
-    const habitIdResult = db.getFirstSync<Habit>(
-      `SELECT habit_id FROM Habit WHERE title = ? AND user_id = ?`,
-      [selectedHabit, userId]
-    );
+    const habitIdResult = getHabitIdByTitle(userId, selectedHabit); // db helper method
   
     if (!habitIdResult) {
       Alert.alert('Error', 'Habit not found');
@@ -70,13 +53,8 @@ const TrackProgressScreen: React.FC = () => {
   
     const habitId = habitIdResult.habit_id;
   
-    // Check if a record already exists for the selected date
-    const existingLog = db.getFirstSync<HabitLog>(
-      `SELECT * FROM HabitLog WHERE habit_id = ? AND date = ?`,
-      [habitId, selectedDate.toISOString().split('T')[0]]
-    );
-  
-    if (existingLog) {
+    // Check if a record already exists for the selected date  
+    if (habitLogExistsByDate(habitId, selectedDate)) {
       // Prompt the user for confirmation to replace existing record
       Alert.alert(
         'Record Exists',
@@ -90,10 +68,7 @@ const TrackProgressScreen: React.FC = () => {
             text: 'Update',
             onPress: () => {
               // Update the existing record
-              db.runSync(
-                `UPDATE HabitLog SET status = ? WHERE habit_id = ? AND date = ?`,
-                [completionStatus, habitId, selectedDate.toISOString().split('T')[0]]
-              );
+              updateHabitLogRecord(completionStatus, habitId, selectedDate); // db helper method
               Alert.alert('Success', 'Habit status updated successfully.');
               resetFields();
             },
@@ -103,10 +78,7 @@ const TrackProgressScreen: React.FC = () => {
     } 
     else {
       // Insert a new record
-      db.runSync(
-        `INSERT INTO HabitLog (habit_id, date, status) VALUES (?, ?, ?)`,
-        [habitId, selectedDate.toISOString().split('T')[0], completionStatus]
-      );
+      addNewHabitLogRecord(habitId, selectedDate, completionStatus); // db helper method
       Alert.alert(
         'Progress Saved',
         `Habit: ${selectedHabit}\nDate: ${selectedDate.toDateString()}\nStatus: ${completionStatus}`

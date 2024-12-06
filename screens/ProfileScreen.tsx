@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 // import { useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
-import { User, getUserData, updateUser } from '../dbHelper';
+import { 
+  User, 
+  getUserData, 
+  updateUser 
+} from '../dbHelper';
 
 const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const [userName, setUserName] = useState('');
