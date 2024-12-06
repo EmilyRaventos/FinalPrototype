@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { habitExistsByTitle, createHabit } from '../dbHelper';
+import { useRoute } from '@react-navigation/native';
 
 const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -18,6 +19,8 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [category, setCategory] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   
+  // const route = useRoute();
+  // const { userId } = route.params as { userId: number }; // Get userId from route params
   const userId = 1; // Example user ID, replace with your actual logic
 
   // Select start date for habit
@@ -57,7 +60,7 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert('Success', 'Habit created successfully!', [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('HomePage'),
+          onPress: () => navigation.navigate('HomePage', { userId }),
         },
       ]);
     }

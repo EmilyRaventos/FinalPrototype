@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, Button, SafeAreaView } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { generalStyles, colors } from '../styles/generalStyles'; // Import styles
+import { generalStyles } from '../styles/generalStyles'; 
 import { useFocusEffect } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { 
   Habit, 
   getAllHabits, 
   removeHabitRecords,
   markComplete 
 } from '../dbHelper';
-// import { useRoute } from '@react-navigation/native';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -20,11 +20,12 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState('');
 
   // const route = useRoute();
-  // const number = route.params?.number;
+  // const { userId } = route.params as { userId: number }; // Get userId from route params
+
   const userId = 1; // Replace with dynamic user ID
   
   const onProfilePress = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('Profile', { userId });
  }
 
   // set to track when an item is expanded
@@ -60,7 +61,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleAddHabit = () => {
-    navigation.navigate('CreateHabit');
+    navigation.navigate('CreateHabit', { userId });
   };
 
   const handleApplyFilters = () => {

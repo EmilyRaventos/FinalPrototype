@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useRoute } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -25,7 +26,9 @@ const TrackProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showHabitDropdown, setShowHabitDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  
+
+  // const route = useRoute();
+  // const { userId } = route.params as { userId: number }; // Get userId from route params
   const userId = 1;
 
   // Get all active habits for the user

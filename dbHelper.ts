@@ -29,7 +29,7 @@ interface HabitLog {
 
 // Queries for AuthScreen
 const getUserIdAtLogin = (email: string, password: string) => {
-  return db.getFirstSync(
+  return db.getFirstSync<number>(
     `SELECT user_id FROM user WHERE email = ? AND password = ?`,
     [email, password]
   );

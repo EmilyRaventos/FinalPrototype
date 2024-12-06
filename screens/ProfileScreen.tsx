@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-// import { useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
 import { 
   User, 
@@ -15,6 +15,8 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState<User | null>(null);
 
+  // const route = useRoute();
+  // const { userId } = route.params as { userId: number }; // Get userId from route params
   const userId = 1;
 
   useEffect(() => {
