@@ -15,9 +15,8 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState<User | null>(null);
 
-  // const route = useRoute();
-  // const { userId } = route.params as { userId: number }; // Get userId from route params
-  const userId = 1;
+  const route = useRoute();
+  const { userId } = route.params as { userId: number }; // Get userId from route params
 
   useEffect(() => {
     const userData = getUserData(userId);

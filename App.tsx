@@ -38,11 +38,14 @@ const App: React.FC = () => {
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
           <Tab.Navigator
-            screenOptions={{
+            screenOptions={({ route }) => ({
               tabBarActiveTintColor: 'tomato',
               tabBarInactiveTintColor: 'gray',
-              headerShown: false
-            }}
+              headerShown: false,
+              tabBarStyle: {
+                display: route.name === 'AuthScreen' || route.name === 'Profile' ? 'none' : 'flex', // Hide tab bar on AuthScreen and Profile
+              },
+            })}
           >
             <Tab.Screen
               name="Home"

@@ -19,9 +19,8 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [category, setCategory] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   
-  // const route = useRoute();
-  // const { userId } = route.params as { userId: number }; // Get userId from route params
-  const userId = 1; // Example user ID, replace with your actual logic
+  const route = useRoute();
+  const { userId } = route.params as { userId: number }; // Get userId from route params
 
   // Select start date for habit
   const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -60,7 +59,7 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       Alert.alert('Success', 'Habit created successfully!', [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('HomePage', { userId }),
+          onPress: () => navigation.navigate('HomePage', { userId: userId }),
         },
       ]);
     }

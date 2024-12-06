@@ -19,13 +19,11 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
 
-  // const route = useRoute();
-  // const { userId } = route.params as { userId: number }; // Get userId from route params
-
-  const userId = 1; // Replace with dynamic user ID
+  const route = useRoute();
+  const { userId } = route.params as { userId: number }; // Get userId from route params
   
   const onProfilePress = () => {
-    navigation.navigate('Profile', { userId });
+    navigation.navigate('Profile', { userId: userId });
  }
 
   // set to track when an item is expanded
@@ -36,11 +34,13 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const fetchHabits = (category = '') => {
     try {  
       const results: Habit[] = getAllHabits(category, userId); // db helper method
-      setHabits(results);
+      setHabits(results || []); // Ensure habits is never null, default to an empty array
     } catch (error) {
       console.error('Error fetching habits:', error);
+      setHabits([]); // Set to an empty array on error to prevent rendering issues
     }
   };
+  
 
   const removeHabit = (id: number) => {
     try {
@@ -61,7 +61,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleAddHabit = () => {
-    navigation.navigate('CreateHabit', { userId });
+    navigation.navigate('CreateHabit', { userId: userId });
   };
 
   const handleApplyFilters = () => {
@@ -74,6 +74,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       fetchHabits();  // Fetch habits when the screen is focused
     }, [])
   );
+
   const renderRightActions = (id: number) => (
     <View style={{ flexDirection: 'row' }}>
       {/* Completed Button */}
@@ -116,7 +117,7 @@ return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
     <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <View style={{paddingLeft: 10}}>
-       <Icon name="icon" size={30} color="#000" />
+       <Icon name="home-outline" size={30} color="#000" />
       </View>
       <Text style={generalStyles.header}>Home</Text>
       <TouchableOpacity style={{paddingRight: 10}} onPress={onProfilePress}>
@@ -135,14 +136,22 @@ return (
     </View>
 
     {/* Habit List */}
-    <FlatList
-      data={habits}
-      renderItem={renderHabitItem}
-      keyExtractor={item => item.habit_id.toString()}
-      initialNumToRender={10}
-      windowSize={5}
-      style={{ flex: 1 }} // Ensure it takes the full height available
-    />
+    {habits.length === 0 ? (
+      <View style={{ alignItems: 'center', marginTop: 20 }}>
+        <Text style={{ color: 'gray', fontSize: 16 }}>
+          No active habits. Click "Add Habit" to create new ones.
+        </Text>
+      </View>
+    ) : (
+      <FlatList
+        data={habits}
+        renderItem={renderHabitItem}
+        keyExtractor={item => item.habit_id.toString()}
+        initialNumToRender={10}
+        windowSize={5}
+        style={{ flex: 1 }}
+      />
+    )}
 
     {/* Filter Modal */}
     <Modal visible={filterModalVisible} animationType="slide" transparent>

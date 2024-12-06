@@ -22,7 +22,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       // Check if a user was found
       if (userId) {
-        navigation.replace('HomePage', { userId }); // Pass userId to HomePage
+        navigation.replace('HomePage', { userId: 1 }); // Pass userId to HomePage
       } else {
         Alert.alert('Error', 'Invalid email or password');
       }
@@ -60,7 +60,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         Alert.alert('Account Created', 'Account created successfully. Welcome!', [
           {
             text: 'OK',
-            onPress: () => navigation.replace('HomePage', { userId }), // Pass userId to HomePage
+            onPress: () => navigation.replace('HomePage', {userId: 1}), // Pass userId to HomePage
           },
         ]);
       } else {

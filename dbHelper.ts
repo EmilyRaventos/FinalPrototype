@@ -53,8 +53,16 @@ const getAllHabits = (category: string, userId: number) => {
     category ? `AND category = ?` : ''
   }`;
   const params = [userId, ...(category ? [category] : [])];
-  return db.getAllSync<Habit>(query, params);
+  return db.getAllSync<Habit>(query, params) || [];
 }
+
+// const getAllHabits = (category: string, userId: number): Habit[] => {
+//   const query = `SELECT * FROM Habit WHERE user_id = ? ${category ? `AND category = ?` : ''}`;
+//   const params = category ? [userId, category] : [userId];
+//   const results = db.getAllSync<Habit>(query, params); // Your SQLite execution logic here
+//   return results || []; // Return an empty array if no results
+// };
+
 
 const removeHabitRecords = (id: number) => {
   db.runSync('DELETE FROM HabitLog WHERE habit_id= ?', [id]);
