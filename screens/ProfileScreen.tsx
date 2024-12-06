@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 // import { useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
 import { getUserByIdSync, updateUserSync, User } from '../dbHelper';
+import { db } from '../db';
 
 const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   // const route = useRoute();
@@ -27,15 +28,17 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const userId = 1;
 
   useEffect(() => {
-    const userData: User = {
-      user_id: 1,
-      user_name: 'test',
-      email: 'test@example.com',
-      password: 'testpassword'
-    };
+    // const userData: User = {
+    //   user_id: 1,
+    //   user_name: 'test',
+    //   email: 'test@example.com',
+    //   password: 'testpassword'
+    // };
     
     // let userData: User = getUserByIdSync(userId);
     // let userData : User = testUser;
+    const userData = db.getFirstSync<User>('SELECT * FROM User WHERE user_id=?',
+      [userId]);
 
     if (userData) {
       setUserName(userData.user_name);

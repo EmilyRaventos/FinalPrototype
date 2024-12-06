@@ -77,7 +77,7 @@ const TrackProgressScreen: React.FC = () => {
     );
   
     if (existingLog) {
-      // Prompt the user for confirmation
+      // Prompt the user for confirmation to replace existing record
       Alert.alert(
         'Record Exists',
         'A record for this habit already exists on the selected date. Do you want to update the status?',
@@ -100,7 +100,8 @@ const TrackProgressScreen: React.FC = () => {
           },
         ]
       );
-    } else {
+    } 
+    else {
       // Insert a new record
       db.runSync(
         `INSERT INTO HabitLog (habit_id, date, status) VALUES (?, ?, ?)`,
