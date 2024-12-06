@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { generalStyles, colors } from '../styles/generalStyles'; // Import styles
 import { db } from '../db';
 import { useFocusEffect } from '@react-navigation/native';
-import { Habit } from '../dbHelper';
+import { Habit, getAllHabits, removeHabitRecords, markComplete } from '../dbHelper';
 // import { useRoute } from '@react-navigation/native';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -28,14 +28,9 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     setExpandedItem(expandedItem === id ? null : id); 
   };
 
-  const fetchHabits = (category = '', date = '') => {
-    try {
-      const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
-        category ? `AND category = ?` : ''
-      }`;
-      const params = [userId, ...(category ? [category] : [])];
-  
-      const results: Habit[] = db.getAllSync(query, params);
+  const fetchHabits = (category = '') => {
+    try {  
+      const results: Habit[] = getAllHabits(category, userId); // db helper method
       setHabits(results);
     } catch (error) {
       console.error('Error fetching habits:', error);
@@ -44,8 +39,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const removeHabit = (id: number) => {
     try {
-      db.runSync('DELETE FROM HabitLog WHERE habit_id= ?', [id]);
-      db.runSync('DELETE FROM Habit WHERE habit_id = ?', [id]);
+      removeHabitRecords(id); // db helper method
       setHabits(habits.filter(habit => habit.habit_id !== id)); // Optimistically update the state
     } catch (error) {
       console.error('Error deleting habit:', error);
@@ -54,7 +48,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const markHabitAsCompleted = (id: number) => {
     try {
-      db.runSync('UPDATE Habit SET status = "done" WHERE habit_id = ?', [id]);
+      markComplete(id); // db helper method
       setHabits(habits.filter(habit => habit.habit_id !== id)); // Optimistically update the state
     } catch (error) {
       console.error('Error marking habit as completed:', error);
@@ -66,7 +60,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const handleApplyFilters = () => {
-    fetchHabits(selectedCategory, selectedDate);
+    fetchHabits(selectedCategory);
     setFilterModalVisible(false);
   };
 

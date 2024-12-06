@@ -14,7 +14,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
     // Login/Authenticate user
     try {
-      const userId = getUserIdAtLogin(email, password);
+      const userId = getUserIdAtLogin(email, password); // db helper method
 
       // Check if a user was found
       if (userId) {
@@ -47,10 +47,10 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       }
   
       // Create new acount
-      createAccount(email, password);
+      createAccount(email, password); // db helper method
   
       // Fetch the userId for the newly created account
-      const userId = getUserIdAtLogin(email, password);
+      const userId = getUserIdAtLogin(email, password); // db helper method
   
       if (userId) {
         Alert.alert('Account Created', 'Account created successfully. Welcome!', [
