@@ -20,6 +20,7 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
   const userId = 1; // Example user ID, replace with your actual logic
 
+  // Select start date for habit
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
     if (selectedDate) {
@@ -27,14 +28,17 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  // Save new habit info
   const handleSaveHabit = () => {
     if (!title || !description || !category) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
   
-    const formattedDate = startDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    // Format date as YYYY-MM-DD
+    const formattedDate = startDate.toISOString().split('T')[0]; 
 
+    // Verify the habit title isn't a duplicate before saving
     const existingHabit = db.getFirstSync(
       `SELECT habit_id FROM Habit WHERE user_id = ? AND title = ? AND status!="done"`,
       [userId, title]

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { db } from '../db'; // Import your SQLite database
+import { getUserIdAtLogin, accountExistsForEmail, createAccount } from '../dbHelper';
 
 const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -13,13 +12,10 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       return;
     }
   
-    // Query to check if user exists
+    // Login/Authenticate user
     try {
-      const userId = db.getFirstSync(
-        `SELECT user_id FROM user WHERE email = ? AND password = ?`,
-        [email, password]
-      );
-        
+      const userId = getUserIdAtLogin(email, password);
+
       // Check if a user was found
       if (userId) {
         navigation.replace('HomePage', { userId: userId }); // Pass userId to HomePage
@@ -32,6 +28,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  // Create Account
   const handleCreateAccount = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
@@ -40,12 +37,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
     try {
       // Check if the email already exists in the database
-      const existingUser = db.getFirstSync(
-        `SELECT user_id FROM user WHERE email = ?`,
-        [email]
-      );
-  
-      if (existingUser) {
+      if (accountExistsForEmail(email)) {
         Alert.alert(
           'Account Exists',
           'This email is already registered. Please log in instead.',
@@ -54,14 +46,11 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         return;
       }
   
-      const sqlStatement = `INSERT INTO user (user_name, email, password) VALUES ('username-test', '${email}', '${password}')`;
-      db.execSync(sqlStatement);
+      // Create new acount
+      createAccount(email, password);
   
       // Fetch the userId for the newly created account
-      const userId = db.getFirstSync(
-        `SELECT user_id FROM user WHERE email = ? AND password = ?`,
-        [email, password]
-      );
+      const userId = getUserIdAtLogin(email, password);
   
       if (userId) {
         Alert.alert('Account Created', 'Account created successfully. Welcome!', [

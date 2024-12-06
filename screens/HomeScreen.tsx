@@ -5,32 +5,23 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { generalStyles, colors } from '../styles/generalStyles'; // Import styles
 import { db } from '../db';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { Habit } from '../dbHelper';
 // import { useRoute } from '@react-navigation/native';
 
-interface Habit {
-  habit_id: number;
-  user_id: number;
-  title: string;
-  description: string; 
-  start_date: string;
-  category: string;
-  status: string;
-}
-
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  // const route = useRoute();
-  // const number = route.params?.number;
-
-  const onProfilePress = () => {
-    navigation.navigate('Profile');
- }
-
   const [habits, setHabits] = useState<Habit[]>([]);
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+
+  // const route = useRoute();
+  // const number = route.params?.number;
+  const userId = 1; // Replace with dynamic user ID
+  
+  const onProfilePress = () => {
+    navigation.navigate('Profile');
+ }
 
   // set to track when an item is expanded
   const toggleExpand = (id: number) => {
@@ -38,7 +29,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   const fetchHabits = (category = '', date = '') => {
-    let userId = 1; // Replace with dynamic user ID
     try {
       const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
         category ? `AND category = ?` : ''
