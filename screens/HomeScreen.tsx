@@ -54,6 +54,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const removeHabit = (id: number) => {
     try {
+      db.runSync('DELETE FROM HabitLog WHERE habit_id= ?', [id]);
       db.runSync('DELETE FROM Habit WHERE habit_id = ?', [id]);
       setHabits(habits.filter(habit => habit.habit_id !== id)); // Optimistically update the state
     } catch (error) {

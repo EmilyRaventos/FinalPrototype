@@ -11,6 +11,17 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { db } from '../db';
+  
+interface Habit {
+  habit_id: number;
+  user_id: number;
+  title: string;
+  description: string; 
+  start_date: string;
+  category: string;
+  status: string;
+}
 
 const TrackProgressScreen: React.FC = () => {
   const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
@@ -18,8 +29,16 @@ const TrackProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showHabitDropdown, setShowHabitDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  const userId = 1;
 
-  const habits: string[] = ['Exercise', 'Read', 'Meditate']; // Example habits
+  // get all active habits for the user
+  const habitResults: { title: string }[] = db.getAllSync(
+    `SELECT title FROM Habit WHERE user_id= ? AND status != "done"`,
+    [userId]
+  );
+  const habits = habitResults.map((habit) => habit.title);
+  // const habits: string[] = ['Exercise', 'Read', 'Meditate']; // Example habits
 
   // Initialize selectedDate to today's date when the component mounts
   useEffect(() => {
@@ -31,6 +50,12 @@ const TrackProgressScreen: React.FC = () => {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
+
+    // get habit_id from habit by habit title (selectedHabit) and userId param
+    const habitId = 1;
+
+    db.runSync(`INSERT INTO HabitLog (habit_id, date, status) VALUES (?, ?, ?)`, 
+      [habitId, selectedDate.toDateString(), completionStatus]);
 
     Alert.alert(
       'Progress Saved',
@@ -151,7 +176,6 @@ const TrackProgressScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 50,
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',

@@ -34,25 +34,35 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   
     const formattedDate = startDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
-  
-    db.runSync(
-      `INSERT INTO Habit (user_id, title, description, start_date, category) VALUES (?, ?, ?, ?, ?)`,
-      [userId, title, description, formattedDate, category]
+
+    const existingHabit = db.getFirstSync(
+      `SELECT habit_id FROM Habit WHERE user_id = ? AND title = ? AND status!="done"`,
+      [userId, title]
     );
   
-    // Clear input fields
-    setTitle('');
-    setDescription('');
-    setStartDate(new Date());
-    setCategory('');
+    if (existingHabit) {
+      Alert.alert('A habit with this title already exists. Please choose a different title.')
+    }
+    else {
+      db.runSync(
+        `INSERT INTO Habit (user_id, title, description, start_date, category) VALUES (?, ?, ?, ?, ?)`,
+        [userId, title, description, formattedDate, category]
+      );
   
-    // Show success message
-    Alert.alert('Success', 'Habit created successfully!', [
-      {
-        text: 'OK',
-        onPress: () => navigation.navigate('HomePage'),
-      },
-    ]);
+      // Clear input fields
+      setTitle('');
+      setDescription('');
+      setStartDate(new Date());
+      setCategory('');
+    
+      // Show success message
+      Alert.alert('Success', 'Habit created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('HomePage'),
+        },
+      ]);
+    }
   };
 
   return (

@@ -24,7 +24,7 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState<User | null>(null);
 
-  const userId = 0;
+  const userId = 1;
 
   useEffect(() => {
     const userData: User = {
