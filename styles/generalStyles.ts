@@ -5,6 +5,7 @@ const colors = {
   remove: '#ff6347', 
   white: '#ffffff',
   gray: '#808080', 
+  green: 'green',
 };
 
 const generalStyles = StyleSheet.create({
@@ -73,6 +74,19 @@ const generalStyles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  
+  completedButton: {
+    backgroundColor: colors.green,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: '100%',
+  },
+
+  completedButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
 
   centeredButtonContainer: {
     alignItems: 'center', 
@@ -94,9 +108,7 @@ const generalStyles = StyleSheet.create({
 
   // Home page - habit list
   habitContainer: {
-    marginBottom: 10, // Add spacing between habit items
-    backgroundColor: '#f9f9f9', 
-    borderRadius: 5,
+    backgroundColor: 'white', 
     padding: 10,
   },
 
@@ -114,12 +126,34 @@ const generalStyles = StyleSheet.create({
   arrow: {
     fontSize: 24,
   },
-
   habitDetails: {
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
     marginTop: 5,
     fontSize: 16,
-    color: '#666', // Color for the details text
+    color: '#666'
   },
+  habitDetailText: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
+  },
+
+  // home page
+  home_header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#f8f8f8', // Adjust as needed
+    elevation: 2, // Add shadow effect on Android
+  },
+  home_title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  
 });
 
-export default generalStyles;
+export { generalStyles, colors };

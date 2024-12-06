@@ -1,115 +1,191 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import generalStyles from '../styles/generalStyles';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Platform,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { habitExistsByTitle, createHabit } from '../dbHelper';
+import { useRoute } from '@react-navigation/native';
 
 const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [startDate, setStartDate] = React.useState('');
-  const [checkInFrequency, setCheckInFrequency] = React.useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [startDate, setStartDate] = useState(new Date());
+  const [category, setCategory] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  // const route = useRoute();
+  // const { userId } = route.params as { userId: number }; // Get userId from route params
+  const userId = 1; // Example user ID, replace with your actual logic
 
+  // Select start date for habit
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setStartDate(selectedDate);
+    }
+  };
+
+  // Save new habit info
   const handleSaveHabit = () => {
-    // Logic to save habit will go here
-    navigation.goBack();
+    if (!title || !description || !category) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+  
+    // Format date as YYYY-MM-DD
+    const formattedDate = startDate.toISOString().split('T')[0]; 
+
+    // Verify the habit title isn't a duplicate before saving
+    const existingHabit = habitExistsByTitle(userId, title); // db helper method
+  
+    if (existingHabit) {
+      Alert.alert('A habit with this title already exists. Please choose a different title.')
+    }
+    else {
+      createHabit(userId, title, description, formattedDate, category);
+  
+      // Clear input fields
+      setTitle('');
+      setDescription('');
+      setStartDate(new Date());
+      setCategory('');
+    
+      // Show success message
+      Alert.alert('Success', 'Habit created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('HomePage', { userId }),
+        },
+      ]);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Create a New Habit</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Start Date"
-          value={startDate}
-          onChangeText={setStartDate}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Check-in Frequency"
-          value={checkInFrequency}
-          onChangeText={setCheckInFrequency}
-        />
-        
-        {/* Save Habit Button */}
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveHabit}>
-          <Text style={styles.saveButtonText}>Save Habit</Text>
-        </TouchableOpacity>
+      <Text style={styles.title}>Create a New Habit</Text>
 
-        {/* Cancel Button */}
-        <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.label}>Title</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Title"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <Text style={styles.label}>Description</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Description"
+        value={description}
+        onChangeText={setDescription}
+      />
+
+      <Text style={styles.label}>Start Date</Text>
+      <TouchableOpacity
+        style={styles.datePickerButton}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <Text style={styles.datePickerText}>
+          {startDate.toDateString()}
+        </Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleDateChange}
+        />
+      )}
+
+      <Text style={styles.label}>Category</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Category"
+        value={category}
+        onChangeText={setCategory}
+      />
+
+      {/* Save Button */}
+      <TouchableOpacity style={styles.saveButton} onPress={handleSaveHabit}>
+        <Text style={styles.buttonText}>Save Habit</Text>
+      </TouchableOpacity>
+
+      {/* Cancel Button */}
+      <TouchableOpacity
+        style={styles.cancelButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.buttonText}>Cancel</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 50,
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f2f2f2', // Light background color
-  },
-  formContainer: {
+    padding: 16,
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 18,
+    marginTop: 12,
   },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 12,
-    paddingHorizontal: 10,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  datePickerButton: {
+    height: 40,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    backgroundColor: '#f0f0f0',
+  },
+  datePickerText: {
+    fontSize: 16,
   },
   saveButton: {
-    backgroundColor: generalStyles.button.backgroundColor, // Tomato color
-    borderRadius: 8,
-    paddingVertical: 12,
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: '#4CAF50',
+    borderRadius: 4,
     alignItems: 'center',
-    marginTop: 10,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   cancelButton: {
-    backgroundColor: '#ddd', // Light gray for cancel button
-    borderRadius: 8,
-    paddingVertical: 12,
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#f44336',
+    borderRadius: 4,
     alignItems: 'center',
-    marginTop: 10,
   },
-  cancelButtonText: {
-    color: '#333',
+  buttonText: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

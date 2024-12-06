@@ -1,37 +1,80 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // For navigation
-import generalStyles from '../styles/generalStyles';
+import { 
+  getUserIdAtLogin, 
+  accountExistsForEmail, 
+  createAccount 
+} from '../dbHelper';
 
-const AuthScreen: React.FC = () => {
+const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation(); // Hook for navigation
 
-  // Handle Login logic (for now, simulate it)
   const handleLogin = () => {
-    // Normally you'd authenticate the user here (API call)
-    if (email && password) {
-      navigation.replace('HomePage'); // Navigate to Home Screen
-    } else {
+    if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+  
+    // Login/Authenticate user
+    try {
+      const userId = getUserIdAtLogin(email, password); // db helper method
+
+      // Check if a user was found
+      if (userId) {
+        navigation.replace('HomePage', { userId }); // Pass userId to HomePage
+      } else {
+        Alert.alert('Error', 'Invalid email or password');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'An error occurred while logging in');
     }
   };
 
-  // Handle Create Account logic (for now, simulate success)
+  // Create Account
   const handleCreateAccount = () => {
-    // Normally you'd create the account here (API call)
-    Alert.alert('Account Created', 'Account created successfully. Welcome!', [
-      {
-        text: 'OK',
-        onPress: () => navigation.replace('HomePage'), // Navigate to Home Screen
-      },
-    ]);
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+  
+    try {
+      // Check if the email already exists in the database
+      if (accountExistsForEmail(email)) {
+        Alert.alert(
+          'Account Exists',
+          'This email is already registered. Please log in instead.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+  
+      // Create new acount
+      createAccount(email, password); // db helper method
+  
+      // Fetch the userId for the newly created account
+      const userId = getUserIdAtLogin(email, password); // db helper method
+  
+      if (userId) {
+        Alert.alert('Account Created', 'Account created successfully. Welcome!', [
+          {
+            text: 'OK',
+            onPress: () => navigation.replace('HomePage', { userId }), // Pass userId to HomePage
+          },
+        ]);
+      } else {
+        Alert.alert('Error', 'Failed to create account');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'An error occurred while creating the account');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the App</Text>
+      <Text style={styles.title}>BOUNDLESS</Text>
 
       <Text style={styles.label}>Email</Text>
       <TextInput
@@ -39,6 +82,8 @@ const AuthScreen: React.FC = () => {
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
       <Text style={styles.label}>Password</Text>
@@ -51,13 +96,14 @@ const AuthScreen: React.FC = () => {
       />
 
       <View style={styles.buttonContainer}>
-        {/* Login Button */}
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
-        {/* Create Account Button */}
-        <TouchableOpacity style={[styles.button, styles.createAccountButton]} onPress={handleCreateAccount}>
+        <TouchableOpacity
+          style={[styles.button, styles.createAccountButton]}
+          onPress={handleCreateAccount}
+        >
           <Text style={styles.createAccountButtonText}>Create Account</Text>
         </TouchableOpacity>
       </View>
@@ -96,15 +142,15 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     padding: 12,
-    backgroundColor: generalStyles.button.backgroundColor,
+    backgroundColor: '#007BFF',
     borderRadius: 4,
     width: 200,
   },
   createAccountButton: {
-    backgroundColor: 'white', // Style for the Create Account button
+    backgroundColor: 'white',
   },
   createAccountButtonText: {
-    color: 'black',   
+    color: 'black',
     fontSize: 16,
     textAlign: 'center',
   },
