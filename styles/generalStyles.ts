@@ -126,11 +126,18 @@ const generalStyles = StyleSheet.create({
   arrow: {
     fontSize: 24,
   },
-
   habitDetails: {
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
     marginTop: 5,
     fontSize: 16,
-    color: '#666', // Color for the details text
+    color: '#666'
+  },
+  habitDetailText: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
   },
 
   // home page
@@ -146,6 +153,7 @@ const generalStyles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
   },
+  
 });
 
 export { generalStyles, colors };

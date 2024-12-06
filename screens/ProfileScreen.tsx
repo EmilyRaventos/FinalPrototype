@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+// import { useRoute } from '@react-navigation/native';
 import { generalStyles } from '../styles/generalStyles';
 import { getUserByIdSync, updateUserSync, User } from '../dbHelper';
 
-const ProfileScreen: React.FC = () => {
-  const navigation = useNavigation();
+const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   // const route = useRoute();
   // const { user_id }: { userId: number } = route.params;
+
+  // get user_id from params
+  // use user_id to update profile info at user request
+
+  interface User {
+    user_id: number,
+    user_name: string,
+    email: string,
+    password: string
+  }
 
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,19 +27,21 @@ const ProfileScreen: React.FC = () => {
   const userId = 0;
 
   useEffect(() => {
-    // const user = getUserByIdSync(userId);
-    let user = {
-      user_id: 0,
-      user_name: 'name',
-      email: 'email',
-      password: 'pass'
-    }
+    const userData: User = {
+      user_id: 1,
+      user_name: 'test',
+      email: 'test@example.com',
+      password: 'testpassword'
+    };
+    
+    // let userData: User = getUserByIdSync(userId);
+    // let userData : User = testUser;
 
-    if (user) {
-      setUserName(user.user_name);
-      setEmail(user.email);
-      setPassword(user.password);
-      setOriginalData(user);
+    if (userData) {
+      setUserName(userData.user_name);
+      setEmail(userData.email);
+      setPassword(userData.password);
+      setOriginalData(userData);
     } else {
       Alert.alert('Error', 'User not found');
       navigation.goBack(); // Navigate back if user not found

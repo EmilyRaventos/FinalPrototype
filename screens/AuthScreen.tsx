@@ -3,10 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../db'; // Import your SQLite database
 
-const AuthScreen: React.FC = () => {
+const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -20,7 +19,7 @@ const AuthScreen: React.FC = () => {
         `SELECT user_id FROM user WHERE email = ? AND password = ?`,
         [email, password]
       );
-  
+        
       // Check if a user was found
       if (userId) {
         navigation.replace('HomePage', { userId: userId }); // Pass userId to HomePage
@@ -32,6 +31,7 @@ const AuthScreen: React.FC = () => {
       Alert.alert('Error', 'An error occurred while logging in');
     }
   };
+
   const handleCreateAccount = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
@@ -58,16 +58,16 @@ const AuthScreen: React.FC = () => {
       db.execSync(sqlStatement);
   
       // Fetch the userId for the newly created account
-      const result = db.getFirstSync(
+      const userId = db.getFirstSync(
         `SELECT user_id FROM user WHERE email = ? AND password = ?`,
         [email, password]
       );
   
-      if (result) {
+      if (userId) {
         Alert.alert('Account Created', 'Account created successfully. Welcome!', [
           {
             text: 'OK',
-            onPress: () => navigation.replace('HomePage', { userId: result }), // Pass userId to HomePage
+            onPress: () => navigation.replace('HomePage', { number: userId }), // Pass userId to HomePage
           },
         ]);
       } else {

@@ -9,6 +9,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import AuthScreen from './screens/AuthScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { initDB } from './db';
+import React, { useEffect } from 'react';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +29,10 @@ const HabitStack = () => {
 };
 
 const App: React.FC = () => {
+  useEffect(() => {
+    initDB();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>

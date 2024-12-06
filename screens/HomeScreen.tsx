@@ -4,6 +4,9 @@ import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeabl
 import Icon from 'react-native-vector-icons/Ionicons';
 import { generalStyles, colors } from '../styles/generalStyles'; // Import styles
 import { db } from '../db';
+import { useFocusEffect } from '@react-navigation/native';
+
+// import { useRoute } from '@react-navigation/native';
 
 interface Habit {
   habit_id: number;
@@ -15,11 +18,10 @@ interface Habit {
   status: string;
 }
 
-interface HomeScreenProps {
-  navigation: any;
-}
+const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  // const route = useRoute();
+  // const number = route.params?.number;
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const onProfilePress = () => {
     navigation.navigate('Profile');
  }
@@ -40,9 +42,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     try {
       const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
         category ? `AND category = ?` : ''
-      } ${date ? `AND start_date = ?` : ''}`;
-      const params = [userId, ...(category ? [category] : []), ...(date ? [date] : [])];
-
+      }`;
+      const params = [userId, ...(category ? [category] : [])];
+  
       const results: Habit[] = db.getAllSync(query, params);
       setHabits(results);
     } catch (error) {
@@ -77,10 +79,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     setFilterModalVisible(false);
   };
 
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchHabits();  // Fetch habits when the screen is focused
+    }, [])
+  );
   const renderRightActions = (id: number) => (
     <View style={{ flexDirection: 'row' }}>
       {/* Completed Button */}
@@ -99,7 +102,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </TouchableOpacity>
     </View>
   );
-
+  
   const renderHabitItem = ({ item }: { item: Habit }) => (
     <ReanimatedSwipeable renderRightActions={() => renderRightActions(item.habit_id)}>
       <View style={generalStyles.habitContainer}>
@@ -108,11 +111,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={generalStyles.arrow}>{expandedItem === item.habit_id ? '▼' : '►'}</Text>
         </TouchableOpacity>
         {expandedItem === item.habit_id && (
-          <Text style={generalStyles.habitDetails}>{item.description}</Text>
+          <View style={generalStyles.habitDetails}>
+            <Text style={generalStyles.habitDetailText}>Description: {item.description}</Text>
+            <Text style={generalStyles.habitDetailText}>Start Date: {item.start_date}</Text>
+            <Text style={generalStyles.habitDetailText}>Category: {item.category}</Text>
+          </View>
         )}
       </View>
     </ReanimatedSwipeable>
   );
+  
 
 return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
@@ -141,9 +149,9 @@ return (
       data={habits}
       renderItem={renderHabitItem}
       keyExtractor={item => item.habit_id.toString()}
-      initialNumToRender={10} // Optimize for large lists
+      initialNumToRender={10}
       windowSize={5}
-      style={{backgroundColor: 'white'}}
+      style={{ flex: 1 }} // Ensure it takes the full height available
     />
 
     {/* Filter Modal */}

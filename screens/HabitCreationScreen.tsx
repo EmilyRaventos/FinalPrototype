@@ -6,22 +6,53 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { db } from '../db';
 
 const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [startDate, setStartDate] = useState('');
+  const [startDate, setStartDate] = useState(new Date());
   const [category, setCategory] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  const userId = 1; // Example user ID, replace with your actual logic
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setStartDate(selectedDate);
+    }
+  };
 
   const handleSaveHabit = () => {
-    if (!title || !description || !startDate || !category) {
+    if (!title || !description || !category) {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
-
-    Alert.alert('Habit Saved', `Title: ${title}\nDescription: ${description}`);
-    navigation.goBack(); // Navigate back after saving
+  
+    const formattedDate = startDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+  
+    db.runSync(
+      `INSERT INTO Habit (user_id, title, description, start_date, category) VALUES (?, ?, ?, ?, ?)`,
+      [userId, title, description, formattedDate, category]
+    );
+  
+    // Clear input fields
+    setTitle('');
+    setDescription('');
+    setStartDate(new Date());
+    setCategory('');
+  
+    // Show success message
+    Alert.alert('Success', 'Habit created successfully!', [
+      {
+        text: 'OK',
+        onPress: () => navigation.navigate('HomePage'),
+      },
+    ]);
   };
 
   return (
@@ -45,12 +76,22 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       />
 
       <Text style={styles.label}>Start Date</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Start Date"
-        value={startDate}
-        onChangeText={setStartDate}
-      />
+      <TouchableOpacity
+        style={styles.datePickerButton}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <Text style={styles.datePickerText}>
+          {startDate.toDateString()}
+        </Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleDateChange}
+        />
+      )}
 
       <Text style={styles.label}>Category</Text>
       <TextInput
@@ -104,6 +145,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
+  datePickerButton: {
+    height: 40,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    backgroundColor: '#f0f0f0',
+  },
+  datePickerText: {
+    fontSize: 16,
+  },
   saveButton: {
     marginTop: 20,
     padding: 12,
@@ -114,7 +168,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginTop: 12,
     padding: 12,
-    backgroundColor: '#f44336', // Red cancel button
+    backgroundColor: '#f44336',
     borderRadius: 4,
     alignItems: 'center',
   },

@@ -12,6 +12,7 @@ const initDB = () => {
     -- Table to store user information
     CREATE TABLE IF NOT EXISTS user (
         user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_name TEXT NOT NULL,
         password TEXT NOT NULL,
         email TEXT
     );
@@ -25,8 +26,7 @@ const initDB = () => {
         start_date TEXT NOT NULL,
         category TEXT,
         status TEXT NOT NULL DEFAULT 'active',
-        FOREIGN KEY (user_id) REFERENCES user (user_id),
-        FOREIGN KEY (habit_id) REFERENCES HabitLog(habit_id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE
     );
 
     -- Table to track habit logs
@@ -35,8 +35,7 @@ const initDB = () => {
         habit_id INTEGER NOT NULL,
         date TEXT NOT NULL,
         status TEXT NOT NULL,
-        FOREIGN KEY (habit_id) REFERENCES Habit (habit_id),
-        FOREIGN KEY (habit_id) REFERENCES HabitLog(habit_id) ON DELETE CASCADE
+        FOREIGN KEY (habit_id) REFERENCES Habit (habit_id) ON DELETE CASCADE
     );
 
     -- Table to store categories
