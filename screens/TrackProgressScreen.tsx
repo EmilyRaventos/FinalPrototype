@@ -23,6 +23,13 @@ interface Habit {
   status: string;
 }
 
+interface HabitLog {
+  log_id: number;
+  habit_id: number;
+  date: string;
+  status: string;
+}
+
 const TrackProgressScreen: React.FC = () => {
   const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] = useState<string | null>(null);
@@ -32,13 +39,12 @@ const TrackProgressScreen: React.FC = () => {
   
   const userId = 1;
 
-  // get all active habits for the user
+  // Get all active habits for the user
   const habitResults: { title: string }[] = db.getAllSync(
     `SELECT title FROM Habit WHERE user_id= ? AND status != "done"`,
     [userId]
   );
   const habits = habitResults.map((habit) => habit.title);
-  // const habits: string[] = ['Exercise', 'Read', 'Meditate']; // Example habits
 
   // Initialize selectedDate to today's date when the component mounts
   useEffect(() => {
@@ -50,24 +56,71 @@ const TrackProgressScreen: React.FC = () => {
       Alert.alert('Error', 'Please fill all fields');
       return;
     }
-
-    // get habit_id from habit by habit title (selectedHabit) and userId param
-    const habitId = 1;
-
-    db.runSync(`INSERT INTO HabitLog (habit_id, date, status) VALUES (?, ?, ?)`, 
-      [habitId, selectedDate.toDateString(), completionStatus]);
-
-    Alert.alert(
-      'Progress Saved',
-      `Habit: ${selectedHabit}\nDate: ${selectedDate.toDateString()}\nStatus: ${completionStatus}`
+  
+    // Get corresponding habit_id
+    const habitIdResult = db.getFirstSync<Habit>(
+      `SELECT habit_id FROM Habit WHERE title = ? AND user_id = ?`,
+      [selectedHabit, userId]
     );
-
-    // Reset the state (optional)
+  
+    if (!habitIdResult) {
+      Alert.alert('Error', 'Habit not found');
+      return;
+    }
+  
+    const habitId = habitIdResult.habit_id;
+  
+    // Check if a record already exists for the selected date
+    const existingLog = db.getFirstSync<HabitLog>(
+      `SELECT * FROM HabitLog WHERE habit_id = ? AND date = ?`,
+      [habitId, selectedDate.toISOString().split('T')[0]]
+    );
+  
+    if (existingLog) {
+      // Prompt the user for confirmation
+      Alert.alert(
+        'Record Exists',
+        'A record for this habit already exists on the selected date. Do you want to update the status?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Update',
+            onPress: () => {
+              // Update the existing record
+              db.runSync(
+                `UPDATE HabitLog SET status = ? WHERE habit_id = ? AND date = ?`,
+                [completionStatus, habitId, selectedDate.toISOString().split('T')[0]]
+              );
+              Alert.alert('Success', 'Habit status updated successfully.');
+              resetFields();
+            },
+          },
+        ]
+      );
+    } else {
+      // Insert a new record
+      db.runSync(
+        `INSERT INTO HabitLog (habit_id, date, status) VALUES (?, ?, ?)`,
+        [habitId, selectedDate.toISOString().split('T')[0], completionStatus]
+      );
+      Alert.alert(
+        'Progress Saved',
+        `Habit: ${selectedHabit}\nDate: ${selectedDate.toDateString()}\nStatus: ${completionStatus}`
+      );
+      resetFields();
+    }
+  };
+  
+  // Function to reset fields after saving
+  const resetFields = () => {
     setSelectedHabit(null);
     setCompletionStatus(null);
     setSelectedDate(null);
   };
-
+  
   const handleDateChange = (event: any, date?: Date) => {
     if (event.type === 'dismissed') {
       setShowDatePicker(false); // Close the picker when dismissed
