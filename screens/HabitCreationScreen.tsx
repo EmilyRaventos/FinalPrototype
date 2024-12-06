@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { db } from '../db';
+import { habitExistsByTitle, createHabit } from '../dbHelper';
 
 const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -39,19 +39,13 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const formattedDate = startDate.toISOString().split('T')[0]; 
 
     // Verify the habit title isn't a duplicate before saving
-    const existingHabit = db.getFirstSync(
-      `SELECT habit_id FROM Habit WHERE user_id = ? AND title = ? AND status!="done"`,
-      [userId, title]
-    );
+    const existingHabit = habitExistsByTitle(userId, title); // db helper method
   
     if (existingHabit) {
       Alert.alert('A habit with this title already exists. Please choose a different title.')
     }
     else {
-      db.runSync(
-        `INSERT INTO Habit (user_id, title, description, start_date, category) VALUES (?, ?, ?, ?, ?)`,
-        [userId, title, description, formattedDate, category]
-      );
+      createHabit(userId, title, description, formattedDate, category);
   
       // Clear input fields
       setTitle('');
