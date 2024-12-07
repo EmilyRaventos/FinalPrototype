@@ -18,10 +18,10 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
   console.log("Profile Screen 1: ");
-  console.log(userId.user_id);
+  console.log(userId);
 
   useEffect(() => {
-    const userData = getUserData(userId.user_id);
+    const userData = getUserData(userId);
     console.log("Profile Screen 2: ");
     console.log(userData?.user_id);
     console.log(userData?.user_name);
@@ -39,14 +39,14 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
       Alert.alert('Error', 'User not found');
       navigation.goBack(); // Navigate back if user not found
     }
-  }, [userId.user_id]);
+  }, [userId]);
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   const handleSave = () => {
-    const success = updateUser(userId.user_id, userName, email, password);
+    const success = updateUser(userId, userName, email, password);
     console.log("Profile Screen 3: ")
     console.log(success);
 

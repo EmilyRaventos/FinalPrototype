@@ -25,7 +25,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   console.log(userId);
   
   const onProfilePress = () => {
-    navigation.navigate('Profile', { userId: userId.user_id });
+    navigation.navigate('Profile', { userId: userId });
  }
 
   // set to track when an item is expanded
@@ -45,7 +45,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
   
-
   const removeHabit = (id: number) => {
     try {
       removeHabitRecords(id); // db helper method
