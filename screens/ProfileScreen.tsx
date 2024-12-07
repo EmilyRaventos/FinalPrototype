@@ -17,12 +17,12 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Profile Screen 1: ");
+  console.log("Opening Profile Screen 1: ");
   console.log(userId);
 
   useEffect(() => {
     const userData = getUserData(userId);
-    console.log("Profile Screen 2: ");
+    console.log("Getting user data for Profile Screen 2: ");
     console.log(userData?.user_id);
     console.log(userData?.user_name);
     console.log(userData?.email);
@@ -33,7 +33,7 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
       setEmail(userData.email);
       setPassword(userData.password);
       setOriginalData(userData);
-      console.log("saved original data...");
+      console.log("Updating fields for Profile Screen 3: ");
 
     } else {
       Alert.alert('Error', 'User not found');
@@ -47,7 +47,7 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
 
   const handleSave = () => {
     const success = updateUser(userId, userName, email, password);
-    console.log("Profile Screen 3: ")
+    console.log("Starting to save for Profile Screen 4: ")
     console.log(success);
 
     if (success) {

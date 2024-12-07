@@ -21,7 +21,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Home Screen 1: ");
+  console.log("Opening Home Screen 1: ");
   console.log(userId);
   
   const onProfilePress = () => {
@@ -35,8 +35,9 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const fetchHabits = (category = '') => {
     try {  
-      const results: Habit[] = getAllHabits(category, userId.user_id); // db helper method
-      console.log("Home Screen 2 (habits): ")
+      const results: Habit[] = getAllHabits(category, userId); // db helper method
+      console.log("Showing results for Home Screen 2 (habits): ")
+      console.log(userId);
       console.log(results);
       setHabits(results || []); // Ensure habits is never null, default to an empty array
     } catch (error) {

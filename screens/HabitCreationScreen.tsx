@@ -21,8 +21,8 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Habit Creation Screen 1: ");
-  console.log(userId.user_id);
+  console.log("Open Habit Creation Screen 1: ");
+  console.log(userId);
 
   // Select start date for habit
   const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -42,15 +42,22 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Format date as YYYY-MM-DD
     const formattedDate = startDate.toISOString().split('T')[0]; 
 
+    console.log("Start save for Habit Creation Screen 2: ");
+
     // Verify the habit title isn't a duplicate before saving
     const existingHabit = habitExistsByTitle(userId, title); // db helper method
-  
+    console.log("checking if email exists already on Habit Creation Screen 3: ");
+    console.log(existingHabit);
     if (existingHabit) {
       Alert.alert('A habit with this title already exists. Please choose a different title.')
     }
     else {
+      console.log("No duplicate, moving forward with save for Habit Creation Screen 4: ");
+      console.log(userId);
       createHabit(userId, title, description, formattedDate, category);
-  
+      console.log("Finished save for Habit Creation Screen 5: ");
+      console.log(userId);
+
       // Clear input fields
       setTitle('');
       setDescription('');

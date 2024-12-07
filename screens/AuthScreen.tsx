@@ -19,12 +19,12 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     // Login/Authenticate user
     try {
       const userId = getUserIdAtLogin(email, password); // db helper method
-      console.log("Auth Screen 1: ");
+      console.log("Starting log in for Auth Screen 1: ");
       console.log(userId.user_id);
 
       // Check if a user was found
       if (userId) {
-        console.log("Auth Screen 2: ");
+        console.log("Checking for match on Auth Screen 2: ");
         console.log(userId.user_id);
         navigation.replace('HomePage', { userId: userId.user_id }); // Pass userId to HomePage
       } else {
@@ -45,6 +45,7 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
     try {
       // Check if the email already exists in the database
+      console.log("Starting to create account for Auth screen: ")
       if (accountExistsForEmail(email)) {
         Alert.alert(
           'Account Exists',
@@ -55,16 +56,19 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       }
   
       // Create new acount
+      console.log("Starting to create account for Auth Screen: ")
       createAccount(email, password); // db helper method
   
       // Fetch the userId for the newly created account
       const userId = getUserIdAtLogin(email, password); // db helper method
+      console.log("Created account for Auth Screen: ");
+      console.log(userId);
   
       if (userId) {
         Alert.alert('Account Created', 'Account created successfully. Welcome!', [
           {
             text: 'OK',
-            onPress: () => navigation.replace('HomePage', {userId: 1}), // Pass userId to HomePage
+            onPress: () => navigation.replace('HomePage', {userId: userId.user_id}), // Pass userId to HomePage
           },
         ]);
       } else {

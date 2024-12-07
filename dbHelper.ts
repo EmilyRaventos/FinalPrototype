@@ -49,16 +49,17 @@ const createAccount = (email: string, password: string) => {
 
 // Queries for HomeScreen
 const getAllHabits = (category: string, userId: number) => {
-  try {
-    const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
-      category ? `AND category = ?` : ''
-    }`;
-    const params = [userId, ...(category ? [category] : [])];
-    return db.getAllSync<Habit>(query, params) || [];
-  } catch (error) {
-    console.error('Error executing query:', error);
-    return [];
-  }
+  // try {
+  //   const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
+  //     category != ' ' ? `AND category = ?` : ''
+  //   }`;
+  //   const params = [userId, ...(category ? [category] : [])];
+  //   return db.getAllSync<Habit>(query, params) || [];
+  // } catch (error) {
+  //   console.error('Error executing query:', error);
+  //   return [];
+  // }
+  return db.getAllSync<Habit>(`SELECT * FROM Habit WHERE user_id=?`, [userId]);
 };
 
 // const getAllHabits = (category: string, userId: number): Habit[] => {
