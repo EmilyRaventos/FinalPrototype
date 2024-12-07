@@ -37,7 +37,7 @@ const App: React.FC = () => {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
-          <Tab.Navigator
+          {/* <Tab.Navigator
             screenOptions={({ route }) => ({
               tabBarActiveTintColor: 'tomato',
               tabBarInactiveTintColor: 'gray',
@@ -84,7 +84,8 @@ const App: React.FC = () => {
                 ),
               }}
             />
-          </Tab.Navigator>
+          </Tab.Navigator> */}
+          <HabitStack/>
         </NavigationContainer>
       </SafeAreaView>
     </SafeAreaProvider>

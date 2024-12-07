@@ -11,6 +11,7 @@ import {
   removeHabitRecords,
   markComplete 
 } from '../dbHelper';
+import { Directions } from 'react-native-gesture-handler';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -26,6 +27,14 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
   const onProfilePress = () => {
     navigation.navigate('Profile', { userId: userId });
+ }
+
+ const onTrackProgressPress = () => {
+  navigation.navigate('TrackProgress', { userId: userId });
+ }
+
+ const onViewProgressPress = () => {
+  navigation.navigate('ViewProgress', { userId: userId });
  }
 
   // set to track when an item is expanded
@@ -121,7 +130,8 @@ return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
     <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <View style={{paddingLeft: 10}}>
-       <Icon name="home-outline" size={30} color="#000" />
+       {/* <Icon name="home-outline" size={30} color="#000" /> */}
+       <Text>Logo</Text>
       </View>
       <Text style={generalStyles.header}>Home</Text>
       <TouchableOpacity style={{paddingRight: 10}} onPress={onProfilePress}>
@@ -129,12 +139,10 @@ return (
       </TouchableOpacity>
     </SafeAreaView>
 
-    {/* Header with "Habits" and Add button */}
-    <View style={{ backgroundColor: 'white', paddingTop: 30, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10 }}>
-      <TouchableOpacity onPress={() => setFilterModalVisible(true)}>
-        <Text style={{ fontSize: 18 }}>Filter</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleAddHabit}>
+    {/* Header with Add button */}
+    <View style={{ backgroundColor: 'white', paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', padding: 10 }}>
+      <TouchableOpacity onPress={handleAddHabit} style={{flexDirection: 'row'}}>
+        <Icon name="add-circle-outline" size={24} color="gray" style={{ paddingRight: 5}}/>  
         <Text style={{ fontSize: 18}}>Add Habit</Text>
       </TouchableOpacity>
     </View>
@@ -157,7 +165,7 @@ return (
       />
     )}
 
-    {/* Filter Modal */}
+    {/* Filter Modal
     <Modal visible={filterModalVisible} animationType="slide" transparent>
       <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
         <View style={{ backgroundColor: 'white', padding: 20, margin: 20, borderRadius: 10 }}>
@@ -178,7 +186,50 @@ return (
           <Button title="Cancel" onPress={() => setFilterModalVisible(false)} color="red" />
         </View>
       </View>
-    </Modal>
+    </Modal> */}
+    <View style={{
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
+      // padding: 10,
+      flexDirection: 'column', // Stack bar and buttons vertically
+      alignItems: 'center', // Center buttons horizontally
+    }}>
+      {/* Bar above the buttons */}
+      <View style={{
+        width: '100%',
+        height: 0.75, 
+        backgroundColor: 'black', 
+        marginBottom: 10, 
+      }} />
+      {/* Buttons */}
+      <SafeAreaView style={{ flexDirection: 'row', width: '100%' }}>
+        <TouchableOpacity 
+          style={{
+            flex: 1, 
+            alignItems: 'center', 
+            padding: 20,
+            justifyContent: 'center',
+          }} 
+          onPress={onTrackProgressPress}>
+          <Icon name="clipboard" size={24} color="gray" />
+          <Text style={{ fontSize: 18, color: 'black' }}>Track Progress</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={{
+            flex: 1, 
+            alignItems: 'center', 
+            padding: 20,
+            justifyContent: 'center',
+          }} 
+          onPress={onViewProgressPress}>
+          <Icon name="calendar" size={24} color="gray" />
+          <Text style={{ fontSize: 18, color: 'black' }}>View Progress</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </View>
+
   </View>
 );
 };

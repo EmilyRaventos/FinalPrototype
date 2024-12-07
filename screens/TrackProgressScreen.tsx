@@ -27,9 +27,11 @@ const TrackProgressScreen: React.FC = () => {
   const [showHabitDropdown, setShowHabitDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // const route = useRoute();
-  // const { userId } = route.params as { userId: number }; // Get userId from route params
-  const userId = 1;
+  const route = useRoute();
+  const { userId } = route.params as { userId: number }; // Get userId from route params
+  console.log("Open Track Progress Screen 1: ");
+  console.log(userId);
+  // const userId = 1;
 
   // Get all active habits for the user
   const habitResults: { title: string }[] = getAllActiveHabits(userId); // db helper method

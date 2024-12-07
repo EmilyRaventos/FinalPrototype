@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars'; // Ensure type import for DateData
 import { format } from 'date-fns'; // Import date-fns for formatting
+import { useRoute } from '@react-navigation/native';
 
 type HabitData = {
   [key: string]: {
@@ -14,7 +15,10 @@ const ViewProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedHabits, setSelectedHabits] = useState<HabitData[string]>([]);
   const [currentMonth, setCurrentMonth] = useState<string>('2024-11'); // Track current month
-
+  const route = useRoute();
+  const { userId } = route.params as { userId: number }; // Get userId from route params
+  console.log("Open View Progress Screen 1: ");
+  console.log(userId);
 
   const habitData: HabitData = {
     '2024-11-01': [

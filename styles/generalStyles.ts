@@ -153,7 +153,30 @@ const generalStyles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
   },
-  
+  headerButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  headerButton: {
+    backgroundColor: '#4CAF50', // Green background
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    elevation: 2, // For subtle shadow effect (Android)
+    shadowColor: '#000', // For shadow effect (iOS)
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  headerButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
 
 export { generalStyles, colors };
