@@ -21,6 +21,8 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
+  console.log("Habit Creation Screen 1: ");
+  console.log(userId.user_id);
 
   // Select start date for habit
   const handleDateChange = (event: any, selectedDate?: Date) => {

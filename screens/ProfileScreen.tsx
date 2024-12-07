@@ -17,27 +17,38 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
+  console.log("Profile Screen 1: ");
+  console.log(userId.user_id);
 
   useEffect(() => {
-    const userData = getUserData(userId);
+    const userData = getUserData(userId.user_id);
+    console.log("Profile Screen 2: ");
+    console.log(userData?.user_id);
+    console.log(userData?.user_name);
+    console.log(userData?.email);
+    console.log(userData?.password);
 
     if (userData) {
       setUserName(userData.user_name);
       setEmail(userData.email);
       setPassword(userData.password);
       setOriginalData(userData);
+      console.log("saved original data...");
+
     } else {
       Alert.alert('Error', 'User not found');
       navigation.goBack(); // Navigate back if user not found
     }
-  }, [userId]);
+  }, [userId.user_id]);
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   const handleSave = () => {
-    const success = updateUser(userId, userName, email, password);
+    const success = updateUser(userId.user_id, userName, email, password);
+    console.log("Profile Screen 3: ")
+    console.log(success);
 
     if (success) {
       setIsEditing(false);
