@@ -130,7 +130,6 @@ return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
     <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <View style={{paddingLeft: 10}}>
-       {/* <Icon name="home-outline" size={30} color="#000" /> */}
        <Text>Logo</Text>
       </View>
       <Text style={generalStyles.header}>Home</Text>
@@ -150,8 +149,8 @@ return (
     {/* Habit List */}
     {habits.length === 0 ? (
       <View style={{ alignItems: 'center', marginTop: 20 }}>
-        <Text style={{ color: 'gray', fontSize: 16 }}>
-          No active habits. Click "Add Habit" to create new ones.
+        <Text style={{ color: 'gray', fontSize: 16, textAlign: 'center' }}>
+          No active habits. {"\n"} Click "Add Habit" to create new ones.
         </Text>
       </View>
     ) : (
@@ -164,34 +163,10 @@ return (
         style={{ flex: 1 }}
       />
     )}
-
-    {/* Filter Modal
-    <Modal visible={filterModalVisible} animationType="slide" transparent>
-      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-        <View style={{ backgroundColor: 'white', padding: 20, margin: 20, borderRadius: 10 }}>
-          <Text style={{ fontSize: 18, marginBottom: 10 }}>Filter Habits</Text>
-          <TextInput
-            placeholder="Category"
-            style={{ borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 5 }}
-            value={selectedCategory}
-            onChangeText={setSelectedCategory}
-          />
-          <TextInput
-            placeholder="Date (YYYY-MM-DD)"
-            style={{ borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 5 }}
-            value={selectedDate}
-            onChangeText={setSelectedDate}
-          />
-          <Button title="Apply" onPress={handleApplyFilters} />
-          <Button title="Cancel" onPress={() => setFilterModalVisible(false)} color="red" />
-        </View>
-      </View>
-    </Modal> */}
     <View style={{
       position: 'absolute',
       bottom: 0,
       width: '100%',
-      // padding: 10,
       flexDirection: 'column', // Stack bar and buttons vertically
       alignItems: 'center', // Center buttons horizontally
     }}>

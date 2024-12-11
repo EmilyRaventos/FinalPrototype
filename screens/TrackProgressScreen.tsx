@@ -125,30 +125,40 @@ const TrackProgressScreen: React.FC = () => {
 
       {/* Habit Dropdown */}
       <Modal
-        visible={showHabitDropdown}
-        transparent={true}
-        animationType="fade"
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <FlatList
-              data={habits}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setSelectedHabit(item);
-                    setShowHabitDropdown(false);
-                  }}
-                >
-                  <Text style={styles.dropdownText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
+  visible={showHabitDropdown}
+  transparent={true}
+  animationType="fade"
+>
+  <TouchableWithoutFeedback onPress={() => setShowHabitDropdown(false)}>
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        {habits.length === 0 ? (
+          <View style={{ alignItems: 'center', marginTop: 20 }}>
+            <Text style={{ color: 'gray', fontSize: 16, textAlign: 'center' }}>
+              No active habits.{"\n"} Click "Add Habit" on the home screen to create new ones.
+            </Text>
           </View>
-        </View>
-      </Modal>
+        ) : (
+          <FlatList
+            data={habits}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => {
+                  setSelectedHabit(item);
+                  setShowHabitDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownText}>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+    </View>
+  </TouchableWithoutFeedback>
+</Modal>
 
       {/* Select Date */}
       <Text style={styles.label}>Start Date</Text>

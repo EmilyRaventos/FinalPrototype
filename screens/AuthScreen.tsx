@@ -20,12 +20,10 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       const userId = getUserIdAtLogin(email, password); // db helper method
       console.log("Starting log in for Auth Screen 1: ");
-      console.log(userId.user_id);
-
-      // Check if a user was found
-      if (userId) {
-        console.log("Checking for match on Auth Screen 2: ");
-        console.log(userId.user_id);
+      
+      // Ensure userId is not null or undefined before accessing its properties
+      if (userId && userId.user_id) {
+        console.log(userId.user_id); // Log user_id if it exists
         navigation.replace('HomePage', { userId: userId.user_id }); // Pass userId to HomePage
       } else {
         Alert.alert('Error', 'Invalid email or password');
