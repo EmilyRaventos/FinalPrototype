@@ -26,12 +26,12 @@ const TrackProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showHabitDropdown, setShowHabitDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
   console.log("Open Track Progress Screen 1: ");
   console.log(userId);
-  // const userId = 1;
 
   // Get all active habits for the user
   const habitResults: { title: string }[] = getAllActiveHabits(userId); // db helper method
@@ -151,34 +151,23 @@ const TrackProgressScreen: React.FC = () => {
       </Modal>
 
       {/* Select Date */}
-      <Text style={styles.label}>Select Date</Text>
+      <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity
-        style={styles.dropdown}
+        style={styles.datePickerButton}
         onPress={() => setShowDatePicker(true)}
       >
-        <Text style={styles.dropdownText}>
-          {selectedDate ? selectedDate.toDateString() : 'Select Date'}
+        <Text style={styles.datePickerText}>
+          {startDate.toDateString()}
         </Text>
       </TouchableOpacity>
-
-      <Modal
-        visible={showDatePicker}
-        transparent={true}
-        animationType="fade"
-      >
-        <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.pickerContainer}>
-              <DateTimePicker
-                value={selectedDate || new Date()}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-                onChange={handleDateChange}
-              />
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+      {showDatePicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleDateChange}
+        />
+      )}
 
       {/* Completion Status */}
       <Text style={styles.label}>Completion Status</Text>
@@ -216,6 +205,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  datePickerButton: {
+    height: 40,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    marginTop: 8,
+    backgroundColor: '#f0f0f0',
+  },
+  datePickerText: {
+    fontSize: 16,
   },
   label: {
     fontSize: 18,
