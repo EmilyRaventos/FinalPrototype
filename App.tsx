@@ -20,9 +20,9 @@ const HabitStack = () => {
     <Stack.Navigator>
       <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HomePage" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreateHabit" component={HabitCreationScreen} />
-      <Stack.Screen name="TrackProgress" component={TrackProgressScreen} />
-      <Stack.Screen name="ViewProgress" component={ViewProgressScreen} />
+      <Stack.Screen name="CreateHabit" component={HabitCreationScreen} options={{ headerShown: true, headerTitle: '' }}/>
+      <Stack.Screen name="TrackProgress" component={TrackProgressScreen} options={{ headerShown: true, headerTitle: '' }}/>
+      <Stack.Screen name="ViewProgress" component={ViewProgressScreen} options={{ headerShown: true, headerTitle: '' }} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
