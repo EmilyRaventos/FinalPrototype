@@ -10,30 +10,20 @@ import {
 
 const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState<User | null>(null);
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Opening Profile Screen 1: ");
-  console.log(userId);
 
   useEffect(() => {
     const userData = getUserData(userId);
-    console.log("Getting user data for Profile Screen 2: ");
-    console.log(userData?.user_id);
-    console.log(userData?.user_name);
-    console.log(userData?.email);
-    console.log(userData?.password);
 
     if (userData) {
       setUserName(userData.user_name);
-      setEmail(userData.email);
       setPassword(userData.password);
       setOriginalData(userData);
-      console.log("Updating fields for Profile Screen 3: ");
 
     } else {
       Alert.alert('Error', 'User not found');
@@ -46,13 +36,12 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   };
 
   const handleSave = () => {
-    const success = updateUser(userId, userName, email, password);
-    console.log("Starting to save for Profile Screen 4: ")
+    const success = updateUser(userId, userName, password);
     console.log(success);
 
     if (success) {
       setIsEditing(false);
-      setOriginalData({ user_id: userId, user_name: userName, email, password });
+      setOriginalData({ user_id: userId, user_name: userName, password });
       Alert.alert('Success', 'Profile updated successfully');
     } else {
       Alert.alert('Error', 'Failed to save changes');
@@ -62,7 +51,6 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
   const handleCancel = () => {
     if (originalData) {
       setUserName(originalData.user_name);
-      setEmail(originalData.email);
       setPassword(originalData.password);
       setIsEditing(false);
     }
@@ -82,19 +70,11 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Name</Text>
+      <Text style={styles.label}>Username</Text>
       <TextInput
         style={[styles.input, isEditing ? styles.editable : styles.readOnly]}
         value={userName}
         onChangeText={setUserName}
-        editable={isEditing}
-      />
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={[styles.input, isEditing ? styles.editable : styles.readOnly]}
-        value={email}
-        onChangeText={setEmail}
         editable={isEditing}
       />
 
@@ -108,13 +88,16 @@ const ProfileScreen: React.FC<{navigation: any}> = ({ navigation }) => {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={isEditing ? handleSave : handleEdit}>
+        <TouchableOpacity
+          style={[styles.button, isEditing ? styles.saveButton : styles.editButton]}
+          onPress={isEditing ? handleSave : handleEdit}
+        >
           <Text style={styles.buttonText}>{isEditing ? 'Save' : 'Edit'}</Text>
         </TouchableOpacity>
 
         {isEditing && (
-          <TouchableOpacity style={styles.button} onPress={handleCancel}>
-            <Text style={styles.buttonText}>Cancel</Text>
+          <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
         )}
 
@@ -156,20 +139,33 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     padding: 12,
-    backgroundColor: generalStyles.button.backgroundColor,
     borderRadius: 4,
     width: 200,
+    alignItems: 'center',
+  },
+  editButton: {
+    backgroundColor: 'blue',
+  },
+  saveButton: {
+    backgroundColor: 'green',
+  },
+  cancelButton: {
+    backgroundColor: 'red',
   },
   logoutButton: {
-    marginTop: -1,
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
   logoutButtonText: {
-    color: 'red',
+    color: 'gray',
     fontSize: 16,
     textAlign: 'center',
   },
   buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  cancelButtonText: {
     color: '#fff',
     fontSize: 16,
     textAlign: 'center',

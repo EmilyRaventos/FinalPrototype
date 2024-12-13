@@ -2,31 +2,30 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { 
   getUserIdAtLogin, 
-  accountExistsForEmail, 
+  accountExistsForUsername, 
   createAccount 
 } from '../dbHelper';
 
 const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!username || !password) {
+      Alert.alert('Error', 'Please enter both username and password');
       return;
     }
   
     // Login/Authenticate user
     try {
-      const userId = getUserIdAtLogin(email, password); // db helper method
+      const userId = getUserIdAtLogin(username, password); // db helper method
       console.log("Starting log in for Auth Screen 1: ");
       
       // Ensure userId is not null or undefined before accessing its properties
       if (userId && userId.user_id) {
-        console.log(userId.user_id); // Log user_id if it exists
         navigation.replace('HomePage', { userId: userId.user_id }); // Pass userId to HomePage
       } else {
-        Alert.alert('Error', 'Invalid email or password');
+        Alert.alert('Error', 'Invalid username or password');
       }
     } catch (error) {
       console.error(error);
@@ -36,18 +35,18 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   // Create Account
   const handleCreateAccount = () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!username || !password) {
+      Alert.alert('Error', 'Please enter both username and password');
       return;
     }
   
     try {
       // Check if the email already exists in the database
       console.log("Starting to create account for Auth screen: ")
-      if (accountExistsForEmail(email)) {
+      if (accountExistsForUsername(username)) {
         Alert.alert(
           'Account Exists',
-          'This email is already registered. Please log in instead.',
+          'This username is already registered. Please log in instead.',
           [{ text: 'OK' }]
         );
         return;
@@ -55,10 +54,10 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   
       // Create new acount
       console.log("Starting to create account for Auth Screen: ")
-      createAccount(email, password); // db helper method
+      createAccount(username, password); // db helper method
   
       // Fetch the userId for the newly created account
-      const userId = getUserIdAtLogin(email, password); // db helper method
+      const userId = getUserIdAtLogin(username, password); // db helper method
       console.log("Created account for Auth Screen: ");
       console.log(userId);
   
@@ -82,13 +81,13 @@ const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>BOUNDLESS</Text>
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={styles.label}>Username</Text>
       <TextInput
         style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Enter your email"
-        keyboardType="email-address"
+        value={username}
+        onChangeText={setUsername}
+        placeholder="Enter your username"
+        keyboardType="default"
         autoCapitalize="none"
       />
 

@@ -6,7 +6,6 @@ const db = SQLite.openDatabaseSync('mySQLiteDB.db');
 interface User {
   user_id: number;
   user_name: string;
-  email: string;
   password: string;
 }
 
@@ -28,47 +27,29 @@ interface HabitLog {
 }
 
 // Queries for AuthScreen
-const getUserIdAtLogin = (email: string, password: string) => {
+const getUserIdAtLogin = (username: string, password: string) => {
   return db.getFirstSync<number>(
-    `SELECT user_id FROM user WHERE email = ? AND password = ?`,
-    [email, password]
+    `SELECT user_id FROM user WHERE user_name = ? AND password = ?`,
+    [username, password]
   );
 }
 
-const accountExistsForEmail = (email: string) => {
+const accountExistsForUsername = (username: string) => {
   return db.getFirstSync(
-    `SELECT user_id FROM user WHERE email = ?`,
-    [email]
+    `SELECT user_id FROM user WHERE user_name = ?`,
+    [username]
   );
 }
 
-const createAccount = (email: string, password: string) => {
-  db.runSync(`INSERT INTO user (user_name, email, password) VALUES ('username-test', ?, ?)`, 
-        [email, password]);
+const createAccount = (username: string, password: string) => {
+  db.runSync(`INSERT INTO user (user_name, password) VALUES (?, ?)`, 
+        [username, password]);
 }
 
 // Queries for HomeScreen
 const getAllHabits = (category: string, userId: number) => {
-  // try {
-  //   const query = `SELECT * FROM Habit WHERE user_id = ? AND status != "done" ${
-  //     category != ' ' ? `AND category = ?` : ''
-  //   }`;
-  //   const params = [userId, ...(category ? [category] : [])];
-  //   return db.getAllSync<Habit>(query, params) || [];
-  // } catch (error) {
-  //   console.error('Error executing query:', error);
-  //   return [];
-  // }
   return db.getAllSync<Habit>(`SELECT * FROM Habit WHERE user_id=?`, [userId]);
 };
-
-// const getAllHabits = (category: string, userId: number): Habit[] => {
-//   const query = `SELECT * FROM Habit WHERE user_id = ? ${category ? `AND category = ?` : ''}`;
-//   const params = category ? [userId, category] : [userId];
-//   const results = db.getAllSync<Habit>(query, params); // Your SQLite execution logic here
-//   return results || []; // Return an empty array if no results
-// };
-
 
 const removeHabitRecords = (id: number) => {
   db.runSync('DELETE FROM HabitLog WHERE habit_id= ?', [id]);
@@ -84,9 +65,9 @@ const getUserData = (userId: number) => {
   return db.getFirstSync<User>('SELECT * FROM User WHERE user_id=?', [userId]);
 }
 
-const updateUser = (user_id: number, user_name: string, email: string, password: string): boolean => {
+const updateUser = (user_id: number, user_name: string, password: string): boolean => {
   try {
-    db.runSync(`UPDATE User SET user_name = ?, email = ?, password = ? WHERE user_id = ?`, [user_name, email, password, user_id]);
+    db.runSync(`UPDATE User SET user_name = ?, password = ? WHERE user_id = ?`, [user_name, password, user_id]);
     return true;
   } catch (error) {
     console.error('Error updating user:', error);
@@ -148,7 +129,7 @@ export {
   Habit, 
   HabitLog, 
   getUserIdAtLogin,  // Queries for AuthScreen
-  accountExistsForEmail, 
+  accountExistsForUsername, 
   createAccount, 
   getAllHabits, // Queries for HomeScreen
   removeHabitRecords, 
@@ -157,7 +138,7 @@ export {
   updateUser, 
   habitExistsByTitle, // Queries for HabitCreationScreen
   createHabit,
-  getAllActiveHabits, // Queries for TrackProgressScreen
+  getAllActiveHabits, // Queries for TrackProgressScreenr
   getHabitIdByTitle, 
   habitLogExistsByDate, 
   updateHabitLogRecord,
