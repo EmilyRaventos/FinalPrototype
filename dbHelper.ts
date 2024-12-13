@@ -53,7 +53,7 @@ const createAccount = (username: string, password: string) => {
 
 // Queries for HomeScreen
 const getAllHabits = (category: string, userId: number) => {
-  return db.getAllSync<Habit>(`SELECT * FROM Habit WHERE user_id=?`, [userId]);
+  return db.getAllSync<Habit>(`SELECT * FROM Habit WHERE user_id=? AND status!="done"`, [userId]);
 };
 
 const removeHabitRecords = (id: number) => {
