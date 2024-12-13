@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Modal, TextInput, Button, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, SafeAreaView, Image } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { generalStyles } from '../styles/generalStyles'; 
@@ -31,7 +31,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   navigation.navigate('ViewProgress', { userId: userId });
  }
 
-  // set to track when an item is expanded
   const toggleExpand = (id: number) => {
     setExpandedItem(expandedItem === id ? null : id); 
   };
@@ -110,13 +109,12 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
     </ReanimatedSwipeable>
   );
-  
 
 return (
   <View style={{ paddingTop: 20, backgroundColor: 'white', flex: 1 }}>
     <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <View style={{paddingLeft: 10}}>
-       <Text>Logo</Text>
+        <Text>Logo</Text>
       </View>
       <Text style={generalStyles.header}>Home</Text>
       <TouchableOpacity style={{paddingRight: 10}} onPress={onProfilePress}>
@@ -190,7 +188,6 @@ return (
         </TouchableOpacity>
       </SafeAreaView>
     </View>
-
   </View>
 );
 };

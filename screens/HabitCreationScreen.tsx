@@ -142,7 +142,7 @@ const HabitCreationScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.cancelButton}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.goBack('HomeScreen')}
       >
         <Text style={styles.buttonText}>Cancel</Text>
       </TouchableOpacity>
