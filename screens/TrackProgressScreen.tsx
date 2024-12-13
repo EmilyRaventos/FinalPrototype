@@ -103,7 +103,8 @@ const TrackProgressScreen: React.FC = () => {
     if (event.type === 'dismissed') {
       setShowDatePicker(false); // Close the picker when dismissed
     } else if (date) {
-      setSelectedDate(date); // Set the selected date
+      setSelectedDate(date); // Update the selected date state
+      setStartDate(date); // Optional: Sync startDate with selectedDate for consistency
       setShowDatePicker(false); // Close the picker after selecting a date
     }
   };
@@ -125,54 +126,54 @@ const TrackProgressScreen: React.FC = () => {
 
       {/* Habit Dropdown */}
       <Modal
-  visible={showHabitDropdown}
-  transparent={true}
-  animationType="fade"
->
-  <TouchableWithoutFeedback onPress={() => setShowHabitDropdown(false)}>
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        {habits.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 20 }}>
-            <Text style={{ color: 'gray', fontSize: 16, textAlign: 'center' }}>
-              No active habits.{"\n"} Click "Add Habit" on the home screen to create new ones.
-            </Text>
+        visible={showHabitDropdown}
+        transparent={true}
+        animationType="fade"
+      >
+        <TouchableWithoutFeedback onPress={() => setShowHabitDropdown(false)}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              {habits.length === 0 ? (
+                <View style={{ alignItems: 'center', marginTop: 20 }}>
+                  <Text style={{ color: 'gray', fontSize: 16, textAlign: 'center' }}>
+                    No active habits.{"\n"} Click "Add Habit" on the home screen to create new ones.
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={habits}
+                  keyExtractor={(item) => item}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setSelectedHabit(item);
+                        setShowHabitDropdown(false);
+                      }}
+                    >
+                      <Text style={styles.dropdownText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              )}
+            </View>
           </View>
-        ) : (
-          <FlatList
-            data={habits}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setSelectedHabit(item);
-                  setShowHabitDropdown(false);
-                }}
-              >
-                <Text style={styles.dropdownText}>{item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        )}
-      </View>
-    </View>
-  </TouchableWithoutFeedback>
-</Modal>
+        </TouchableWithoutFeedback>
+      </Modal>
 
-      {/* Select Date */}
-      <Text style={styles.label}>Start Date</Text>
-      <TouchableOpacity
+            {/* Select Date */}
+            <Text style={styles.label}>Start Date</Text>
+            <TouchableOpacity
         style={styles.datePickerButton}
         onPress={() => setShowDatePicker(true)}
       >
         <Text style={styles.datePickerText}>
-          {startDate.toDateString()}
+          {selectedDate ? selectedDate.toDateString() : startDate.toDateString()}
         </Text>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
-          value={startDate}
+          value={selectedDate || startDate}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           onChange={handleDateChange}
