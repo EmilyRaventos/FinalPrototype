@@ -39,7 +39,9 @@ const TrackProgressScreen: React.FC = () => {
 
   // Initialize selectedDate to today's date when the component mounts
   useEffect(() => {
-    setSelectedDate(new Date()); // Set initial date to today's date
+    const today = new Date();
+    setStartDate(today);
+    setSelectedDate(today);
   }, []);
 
   const handleSaveProgress = () => {
