@@ -11,19 +11,13 @@ import {
   removeHabitRecords,
   markComplete 
 } from '../dbHelper';
-import { Directions } from 'react-native-gesture-handler';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [expandedItem, setExpandedItem] = useState<number | null>(null);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
 
   const route = useRoute();
   const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Opening Home Screen 1: ");
-  console.log(userId);
   
   const onProfilePress = () => {
     navigation.navigate('Profile', { userId: userId });
@@ -45,9 +39,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const fetchHabits = (category = '') => {
     try {  
       const results: Habit[] = getAllHabits(category, userId); // db helper method
-      console.log("Showing results for Home Screen 2 (habits): ")
-      console.log(userId);
-      console.log(results);
       setHabits(results || []); // Ensure habits is never null, default to an empty array
     } catch (error) {
       console.error('Error fetching habits:', error);
@@ -75,11 +66,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const handleAddHabit = () => {
     navigation.navigate('CreateHabit', { userId: userId });
-  };
-
-  const handleApplyFilters = () => {
-    fetchHabits(selectedCategory);
-    setFilterModalVisible(false);
   };
 
   useFocusEffect(
