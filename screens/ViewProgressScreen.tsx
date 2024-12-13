@@ -1,35 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
 import { useRoute } from '@react-navigation/native';
-import { HabitLog, HabitLogWithDetails, getHabitLogsByDate } from '../dbHelper'; // Import your database helper function
+import { HabitLog, HabitLogWithDetails, getHabitLogsByDate } from '../dbHelper';
 
 const ViewProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedHabits, setSelectedHabits] = useState<HabitLogWithDetails[]>([]);
   const [habitData, setHabitData] = useState<Record<string, HabitLog[]>>({});
-  
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const route = useRoute();
   const { userId } = route.params as { userId: number };
 
-  // Fetch data for a specific date
-  const fetchHabitsForDate = async (date: string) => {
+  const fetchHabitsForDate = useCallback(async (date: string) => {
+    setLoading(true);
+    setErrorMessage(null);
     try {
-      const logs: HabitLogWithDetails[] = getHabitLogsByDate(userId, date); // Call your database query function
+      const logs: HabitLogWithDetails[] = await getHabitLogsByDate(userId, date);
       setSelectedHabits(logs);
     } catch (error) {
       console.error('Error fetching habit logs:', error);
+      setErrorMessage('Failed to fetch habit logs. Please try again later.');
       setSelectedHabits([]);
+    } finally {
+      setLoading(false);
     }
-  };
-  
-  // Handle day selection
+  }, [userId]);
+
   const handleDayPress = (day: DateData) => {
     setSelectedDate(day.dateString);
     fetchHabitsForDate(day.dateString);
   };
 
-  // Calculate the completion percentage for each date
   const getCompletionPercentage = (date: string): number => {
     const habits = habitData[date] || [];
     const totalHabits = habits.length;
@@ -44,13 +48,16 @@ const ViewProgressScreen: React.FC = () => {
   };
 
   const getStatusColor = (status: 'Completed' | 'Incomplete' | 'Partial' | undefined): string => {
-    if (status === 'Completed') return '#4caf50'; // Green
-    if (status === 'Incomplete') return '#f44336'; // Red
-    if (status === 'Partial') return '#ff9800'; // Orange
-    return '#000'; // Default color
+    if (status === 'Completed') return '#4caf50';
+    if (status === 'Incomplete') return '#f44336';
+    if (status === 'Partial') return '#ff9800';
+    return '#000';
   };
 
-  // Get color for each day based on completion percentage
+  const isValidStatus = (status: any): status is 'Completed' | 'Incomplete' | 'Partial' | undefined => {
+    return ['Completed', 'Incomplete', 'Partial', undefined].includes(status);
+  };
+
   const getDayColor = (date: string): string => {
     const percentage = getCompletionPercentage(date);
     if (percentage === 100) return '#4caf50';
@@ -60,12 +67,6 @@ const ViewProgressScreen: React.FC = () => {
     return '#f44336';
   };
 
-  const isValidStatus = (status: any): status is 'Completed' | 'Incomplete' | 'Partial' | undefined => {
-    return ['Completed', 'Incomplete', 'Partial', undefined].includes(status);
-  };
-  
-
-  // Mark dates for the calendar
   const markedDates = Object.keys(habitData).reduce((acc, date) => {
     acc[date] = {
       selected: true,
@@ -73,6 +74,25 @@ const ViewProgressScreen: React.FC = () => {
     };
     return acc;
   }, {} as Record<string, { selected: boolean; selectedColor: string }>);
+
+  useEffect(() => {
+    const fetchAllHabitData = async () => {
+      try {
+        const allHabitLogs = getHabitLogsByDate(userId, "null");
+        const groupedData = allHabitLogs.reduce((acc, log) => {
+          const date = log.date;
+          if (!acc[date]) acc[date] = [];
+          acc[date].push(log);
+          return acc;
+        }, {} as Record<string, HabitLog[]>);
+        setHabitData(groupedData);
+      } catch (error) {
+        console.error('Error fetching habit data:', error);
+        setErrorMessage('Failed to fetch initial habit data.');
+      }
+    };
+    fetchAllHabitData();
+  }, [userId]);
 
   return (
     <View style={styles.container}>
@@ -88,21 +108,32 @@ const ViewProgressScreen: React.FC = () => {
         {selectedDate ? `Selected Date: ${selectedDate}` : 'Select a date to view details'}
       </Text>
 
-      <ScrollView style={styles.habitsList}>
-        {selectedHabits.length > 0 ? (
-          selectedHabits.map((habit, index) => (
-            <View key={index} style={styles.habitItem}>
-              <Text style={styles.habitText}>
-              {habit.title} - <Text style={{ color: isValidStatus(habit.status) ? getStatusColor(habit.status) : '#000' }}>
-              {habit.status}
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
+      ) : errorMessage ? (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      ) : (
+        <ScrollView style={styles.habitsList}>
+          {selectedHabits.length > 0 ? (
+            selectedHabits.map((habit, index) => (
+              <View key={index} style={styles.habitItem}>
+                <Text style={styles.habitText}>
+                  {habit.title} -{' '}
+                  <Text
+                    style={{
+                      color: isValidStatus(habit.status) ? getStatusColor(habit.status) : '#000',
+                    }}
+                  >
+                    {habit.status}
+                  </Text>
                 </Text>
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.noHabitsText}>No habits for this date.</Text>
-        )}
-      </ScrollView>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noHabitsText}>No habits for this date.</Text>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -144,6 +175,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: 'gray',
+  },
+  loader: {
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: 'red',
+    marginTop: 20,
   },
 });
 
