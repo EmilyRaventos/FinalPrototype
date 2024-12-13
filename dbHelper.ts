@@ -26,6 +26,10 @@ interface HabitLog {
   status: string;
 }
 
+interface HabitLogWithDetails extends HabitLog {
+  title: string;
+}
+
 // Queries for AuthScreen
 const getUserIdAtLogin = (username: string, password: string) => {
   return db.getFirstSync<number>(
@@ -124,10 +128,26 @@ const addNewHabitLogRecord = (habitId: number, selectedDate: Date, completionSta
   );
 }
 
+//  ViewProgress Screen
+const fetchHabitLogsForUser = (userId: number) => {
+  return db.getAllSync<HabitLog[]>("SELECT * FROM HabitLog WHERE user_id = ?", [userId]);
+}
+
+const getHabitLogsByDate = (userId: number, date: string) => {
+  return db.getAllSync<HabitLogWithDetails>(
+    "SELECT hl.*, h.title " +
+    "FROM HabitLog hl " +
+    "JOIN Habit h ON hl.habit_id = h.habit_id " +
+    "WHERE h.user_id = ? AND hl.date = ?", 
+    [userId, date]
+  )
+}
+
 export { 
   User, // Interfaces
   Habit, 
   HabitLog, 
+  HabitLogWithDetails,
   getUserIdAtLogin,  // Queries for AuthScreen
   accountExistsForUsername, 
   createAccount, 
@@ -138,9 +158,11 @@ export {
   updateUser, 
   habitExistsByTitle, // Queries for HabitCreationScreen
   createHabit,
-  getAllActiveHabits, // Queries for TrackProgressScreenr
+  getAllActiveHabits, // Queries for TrackProgressScreen
   getHabitIdByTitle, 
   habitLogExistsByDate, 
   updateHabitLogRecord,
-  addNewHabitLogRecord  
+  addNewHabitLogRecord,
+  fetchHabitLogsForUser, // Queries for ViewProgressPage  
+  getHabitLogsByDate, 
 };

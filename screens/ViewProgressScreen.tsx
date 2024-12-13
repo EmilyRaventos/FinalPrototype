@@ -1,101 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Calendar, DateData } from 'react-native-calendars'; // Ensure type import for DateData
-import { format } from 'date-fns'; // Import date-fns for formatting
+import { Calendar, DateData } from 'react-native-calendars';
 import { useRoute } from '@react-navigation/native';
-
-type HabitData = {
-  [key: string]: {
-    habit: string;
-    status: 'Completed' | 'Incomplete' | 'Partial' | undefined;
-  }[];
-};
+import { HabitLog, HabitLogWithDetails, getHabitLogsByDate } from '../dbHelper'; // Import your database helper function
 
 const ViewProgressScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedHabits, setSelectedHabits] = useState<HabitData[string]>([]);
-  const [currentMonth, setCurrentMonth] = useState<string>('2024-11'); // Track current month
+  const [selectedHabits, setSelectedHabits] = useState<HabitLogWithDetails[]>([]);
+  const [habitData, setHabitData] = useState<Record<string, HabitLog[]>>({});
+  
   const route = useRoute();
-  const { userId } = route.params as { userId: number }; // Get userId from route params
-  console.log("Open View Progress Screen 1: ");
-  console.log(userId);
+  const { userId } = route.params as { userId: number };
 
-  const habitData: HabitData = {
-    '2024-11-01': [
-      { habit: 'Habit 1', status: 'Completed' },
-      { habit: 'Habit 2', status: 'Completed' },
-    ],
-    '2024-11-02': [
-      { habit: 'Habit 1', status: 'Partial' },
-      { habit: 'Habit 2', status: 'Partial' },
-    ],
-    '2024-11-03': [
-      { habit: 'Habit 1', status: 'Incomplete' },
-      { habit: 'Habit 2', status: 'Incomplete' },
-    ],
-    '2024-11-04': [
-      { habit: 'Habit 1', status: 'Completed' },
-      { habit: 'Habit 2', status: 'Partial' },
-    ],
-    '2024-11-05': [
-      { habit: 'Habit 1', status: 'Completed' },
-      { habit: 'Habit 2', status: 'Incomplete' },
-    ],
+  // Fetch data for a specific date
+  const fetchHabitsForDate = async (date: string) => {
+    try {
+      const logs: HabitLogWithDetails[] = getHabitLogsByDate(userId, date); // Call your database query function
+      setSelectedHabits(logs);
+    } catch (error) {
+      console.error('Error fetching habit logs:', error);
+      setSelectedHabits([]);
+    }
+  };
+  
+  // Handle day selection
+  const handleDayPress = (day: DateData) => {
+    setSelectedDate(day.dateString);
+    fetchHabitsForDate(day.dateString);
   };
 
-  // Calculate the completion percentage for each date, considering partials as 50%
+  // Calculate the completion percentage for each date
   const getCompletionPercentage = (date: string): number => {
     const habits = habitData[date] || [];
     const totalHabits = habits.length;
-    
-    // Sum up the completion percentages for each habit
+
     const totalCompletion = habits.reduce((acc, habit) => {
-      if (habit.status === 'Completed') {
-        return acc + 100; // 100% for completed
-      }
-      if (habit.status === 'Partial') {
-        return acc + 50; // 50% for partial
-      }
-      return acc; // 0% for incomplete
+      if (habit.status === 'Completed') return acc + 100;
+      if (habit.status === 'Partial') return acc + 50;
+      return acc;
     }, 0);
 
-    // Calculate the percentage
     return totalHabits > 0 ? (totalCompletion / (totalHabits * 100)) * 100 : 0;
   };
 
-  // Get color based on the completion percentage
-  const getDayColor = (date: string): string => {
-    const percentage = getCompletionPercentage(date);
-
-    if (percentage === 100) return '#4caf50'; // Green
-    if (percentage >= 75) return '#81c784'; // Light Green
-    if (percentage >= 50) return '#ffeb3b'; // Yellow
-    if (percentage >= 25) return '#ff9800'; // Orange
-    return '#f44336'; // Red
-  };
-
-  // Handle the click event to display habit details
-  const handleDayPress = (day: DateData) => {
-    setSelectedDate(day.dateString);
-    const habitsForSelectedDate = habitData[day.dateString] || [];
-    setSelectedHabits(habitsForSelectedDate);
-  };
-
-  // Color coding for habit status
   const getStatusColor = (status: 'Completed' | 'Incomplete' | 'Partial' | undefined): string => {
     if (status === 'Completed') return '#4caf50'; // Green
     if (status === 'Incomplete') return '#f44336'; // Red
     if (status === 'Partial') return '#ff9800'; // Orange
-    return '#000'; // Default color if status is undefined
+    return '#000'; // Default color
   };
 
-  // Format the current month for display as 'Month Year'
-  const formatMonth = (month: string) => {
-    const [year, monthNum] = month.split('-');
-    const date = new Date(Number(year), Number(monthNum) - 1);
-    return format(date, 'MMMM yyyy'); // Format as 'November 2024'
+  // Get color for each day based on completion percentage
+  const getDayColor = (date: string): string => {
+    const percentage = getCompletionPercentage(date);
+    if (percentage === 100) return '#4caf50';
+    if (percentage >= 75) return '#81c784';
+    if (percentage >= 50) return '#ffeb3b';
+    if (percentage >= 25) return '#ff9800';
+    return '#f44336';
   };
 
+  const isValidStatus = (status: any): status is 'Completed' | 'Incomplete' | 'Partial' | undefined => {
+    return ['Completed', 'Incomplete', 'Partial', undefined].includes(status);
+  };
+  
+
+  // Mark dates for the calendar
   const markedDates = Object.keys(habitData).reduce((acc, date) => {
     acc[date] = {
       selected: true,
@@ -111,7 +81,7 @@ const ViewProgressScreen: React.FC = () => {
       <Calendar
         markedDates={markedDates}
         onDayPress={handleDayPress}
-        monthFormat={'MMMM yyyy'} // Use this format for the calendar's header
+        monthFormat={'MMMM yyyy'}
         style={styles.calendar}
       />
       <Text style={styles.selectedDate}>
@@ -123,8 +93,8 @@ const ViewProgressScreen: React.FC = () => {
           selectedHabits.map((habit, index) => (
             <View key={index} style={styles.habitItem}>
               <Text style={styles.habitText}>
-                {habit.habit} - <Text style={{ color: getStatusColor(habit.status) }}>
-                  {habit.status}
+              {habit.title} - <Text style={{ color: isValidStatus(habit.status) ? getStatusColor(habit.status) : '#000' }}>
+              {habit.status}
                 </Text>
               </Text>
             </View>
@@ -149,13 +119,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-  },
-  monthText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-    color: '#333',
   },
   calendar: {
     marginBottom: 20,
