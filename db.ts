@@ -9,12 +9,10 @@ const initDB = () => {
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
 
-    -- Table to store user information
     CREATE TABLE IF NOT EXISTS user (
-        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_name TEXT NOT NULL,
-        password TEXT NOT NULL,
-        email TEXT
+      user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_name TEXT NOT NULL,
+      password TEXT NOT NULL
     );
 
     -- Table to store habit information

@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { DateData } from 'react-native-calendars';
 
 const db = SQLite.openDatabaseSync('mySQLiteDB.db');
 
@@ -143,6 +144,10 @@ const getHabitLogsByDate = (userId: number, date: string) => {
   )
 }
 
+const getAllLogsByUserAndDate = (userId: string, date: DateData) => {
+    return db.getAllSync("SELECT * FROM HabitLog WHERE date=?", [date.dateString])
+}
+
 export { 
   User, // Interfaces
   Habit, 
@@ -165,4 +170,5 @@ export {
   addNewHabitLogRecord,
   fetchHabitLogsForUser, // Queries for ViewProgressPage  
   getHabitLogsByDate, 
+  getAllLogsByUserAndDate,
 };
